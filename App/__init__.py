@@ -1,5 +1,5 @@
 import sys
-sys.path.append('.')
+sys.path.append('./App')
 import time 
 from flask import Flask,render_template
 from flask import jsonify, request, url_for, redirect

@@ -1,0 +1,212 @@
+[
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011010",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00150000",
+            "minValue": "00025000",
+            "meanValue": "00084541",
+            "medianValue": "00063776"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0002",
+            "date": "202101011010",
+            "valueAlerte": "00025000"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011011",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00149750",
+            "minValue": "00024943",
+            "meanValue": "00084393",
+            "medianValue": "00063677"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0004",
+            "date": "202101011011",
+            "valueAlerte": "00063713"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011012",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00150400",
+            "minValue": "00025100",
+            "meanValue": "00084783",
+            "medianValue": "00063929"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0001",
+            "date": "202101011012",
+            "valueAlerte": "00150440"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011013",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00149250",
+            "minValue": "00024829",
+            "meanValue": "00084096",
+            "medianValue": "00063480"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0004",
+            "date": "202101011013",
+            "valueAlerte": "00063588"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011014",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00150800",
+            "minValue": "00025200",
+            "meanValue": "00085024",
+            "medianValue": "00064082"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0003",
+            "date": "202101011014",
+            "valueAlerte": "00085096"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011015",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00148750",
+            "minValue": "00024715",
+            "meanValue": "00083800",
+            "medianValue": "00063283"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0003",
+            "date": "202101011015",
+            "valueAlerte": "00083890"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011016",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00151200",
+            "minValue": "00025300",
+            "meanValue": "00085266",
+            "medianValue": "00064235"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0002",
+            "date": "202101011016",
+            "valueAlerte": "00025120"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011017",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00148250",
+            "minValue": "00024601",
+            "meanValue": "00083503",
+            "medianValue": "00063086"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0001",
+            "date": "202101011017",
+            "valueAlerte": "00148390"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011018",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00151600",
+            "minValue": "00025400",
+            "meanValue": "00085507",
+            "medianValue": "00064388"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0004",
+            "date": "202101011018",
+            "valueAlerte": "00064676"
+        }
+    },
+    {
+        "_measureHeader": {
+            "version": "00.01.00",
+            "date": "202101011019",
+            "measureType": "TEMP0001",
+            "timeCode": "i",
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00147750",
+            "minValue": "00024487",
+            "meanValue": "00083206",
+            "medianValue": "00062889"
+        },
+        "_alerteConfig": {
+            "version": "00.01.00",
+            "idAlerte": "0003",
+            "date": "202101011019",
+            "valueAlerte": "00083368"
+        }
+    }
+]
