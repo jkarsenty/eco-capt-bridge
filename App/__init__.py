@@ -24,7 +24,7 @@ def about():
         _measureHeader = request.form["_measureHeader"]
         _measureBody = request.form["_measureBody"]
         _alerteConfig = request.form["_alerteConfig"]
-        return redirect(url_for("ecocapt"))
+        return redirect(url_for("processpost"))
     else : 
         # measure_config = load_measure_config_example()
         # one_measure = choose_one_measure(measure_config)
@@ -36,13 +36,13 @@ def about():
 
         return render_template("about.html", title=title)
     
-@app.route('/ecocapt', methods=['GET','POST'])
-def ecocapt():
+@app.route('/processpost', methods=['GET','POST'])
+def processpost():
     title = "eco-capt-bridge - Data"
     if request.method == 'POST':
         data = request.get_json()
         data_json = jsonify(data)
-        return render_template("ecocapt.html",title=title,data=data)
+        return render_template("processpost.html",title=title,data=data)
     else:
-        return render_template("ecocapt.html",title=title)
+        return render_template("processpost.html",title=title)
 
