@@ -33,11 +33,11 @@ def capteurs():
         elif "init_data" in request.form :
             app.config['CAPTEURS_DATA'] = []
 
-        return redirect(url_for("processpost"))
+        return redirect(url_for("ecocapt"))
     else :         
         return render_template("capteurs.html", title=title)
     
-@app.route('/processpost', methods=['GET','POST'])
-def processpost():
+@app.route('/ecocapt', methods=['GET','POST'])
+def ecocapt():
     title = "eco-capt-bridge - Data"
-    return render_template("processpost.html",title=title,data=app.config['CAPTEURS_DATA'])
+    return render_template("ecocapt.html",title=title,data=app.config['CAPTEURS_DATA'])
