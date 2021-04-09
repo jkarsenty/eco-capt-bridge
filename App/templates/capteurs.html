@@ -10,13 +10,20 @@
 
 {% block content%}
     <div class="container">
-        <h1>About Ecocapt</h1>
+        <h1>Capteurs Ecocapt</h1>
         
         <ul>
             {% for data in capteurs %}
                 <li>{{data}}</li>
             {% endfor %}
         </ul>
+    </div>
+    <br/>
+    <div>
+        <form method="POST">
+            <button type="submit" name="send_data" class="btn btn-primary">Send Data</button>
+            <button type="submit" name="init_data" class="btn btn-primary">Init Data</button>
+        </form>
     </div>
 {% endblock %}
 

@@ -10,39 +10,34 @@ from scripts.get_rpi_capteurs import generate_alerteConfig,generate_measureBody,
 
 
 app = Flask(__name__)
-capteurs_data = []
+app.config['CAPTEURS_DATA'] = []
 
 @app.route('/')
 def index():
     title = "eco-capt-bridge - Home"
     return render_template("index.html",title=title)
 
-@app.route('/about',methods=['GET','POST'])
-def about():
+@app.route('/capteurs',methods=['GET','POST'])
+def capteurs():
+    capteurs_data = app.config['CAPTEURS_DATA']
     title = "eco-capt-bridge - About"
-    if request.method == "POST":
-        _measureHeader = request.form["_measureHeader"]
-        _measureBody = request.form["_measureBody"]
-        _alerteConfig = request.form["_alerteConfig"]
-        return redirect(url_for("processpost"))
-    else : 
-        # measure_config = load_measure_config_example()
-        # one_measure = choose_one_measure(measure_config)
-        # _measureHeader = generate_measureHeader(one_measure)
-        # _measureBody = generate_measureBody(one_measure)
-        # _alerteConfig = generate_alerteConfig(one_measure)
+    if request.method == "POST" :
+        if "send_data" in request.form :
+            measure_config = load_measure_config_example()
+            one_measure = choose_one_measure(measure_config)
+            _measureHeader = generate_measureHeader(one_measure)
+            _measureBody = generate_measureBody(one_measure)
+            _alerteConfig = generate_alerteConfig(one_measure)
+            capteurs_data.extend([("_measureHeader",_measureHeader),("_measureBody",_measureBody),("_alerteConfig",_alerteConfig)]) 
         
-        # capteurs_data.extend([_measureHeader,_measureBody,_alerteConfig])    
+        elif "init_data" in request.form :
+            app.config['CAPTEURS_DATA'] = []
 
-        return render_template("about.html", title=title)
+        return redirect(url_for("processpost"))
+    else :         
+        return render_template("capteurs.html", title=title)
     
 @app.route('/processpost', methods=['GET','POST'])
 def processpost():
     title = "eco-capt-bridge - Data"
-    if request.method == 'POST':
-        data = request.get_json()
-        data_json = jsonify(data)
-        return render_template("processpost.html",title=title,data=data)
-    else:
-        return render_template("processpost.html",title=title)
-
+    return render_template("processpost.html",title=title,data=app.config['CAPTEURS_DATA'])
