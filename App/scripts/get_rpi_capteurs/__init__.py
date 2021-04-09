@@ -37,4 +37,4 @@ def generate_alerteConfig(one_measure:dict)->str:
     idAlerte = _alerteConfig["idAlerte"]
     date = _alerteConfig["date"]
     valueAlerte = _alerteConfig["valueAlerte"]
-    return f"{version}{idAlerte}{date}{valueAlerte}").encode("utf-8").hex()
+    return f"{version}{idAlerte}{date}{valueAlerte}".encode("utf-8").hex()
