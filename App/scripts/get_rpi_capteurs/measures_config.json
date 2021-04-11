@@ -3,9 +3,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011010",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00150000",
@@ -24,9 +24,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011011",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00149750",
@@ -45,9 +45,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011012",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00150400",
@@ -66,9 +66,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011013",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00149250",
@@ -87,9 +87,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011014",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00150800",
@@ -108,9 +108,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011015",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00148750",
@@ -129,9 +129,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011016",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00151200",
@@ -150,9 +150,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011017",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00148250",
@@ -171,9 +171,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011018",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00151600",
@@ -192,9 +192,9 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011019",
-            "measureType": "TEMP0001",
+            "measureType": "ACOU0001",
             "timeCode": "i",
-            "nbTime": "001"
+            "nbTime": "002"
         },
         "_measureBody": {
             "maxValue": "00147750",

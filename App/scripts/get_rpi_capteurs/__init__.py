@@ -21,7 +21,7 @@ def generate_measureHeader(one_measure:dict)->str:
     measureType = _measureHeader["measureType"]
     timeCode = _measureHeader["timeCode"]
     nbTime = _measureHeader["nbTime"]
-    return f"{version}{date}{measureType}{timeCode}{nbTime}".encode("utf-8").hex()
+    return f"{version}{date}{measureType}{timeCode}{nbTime}".encode("utf-8")
 
 def generate_measureBody(one_measure:dict)->str:
     _measureBody = one_measure["_measureBody"]
@@ -29,7 +29,7 @@ def generate_measureBody(one_measure:dict)->str:
     minValue = _measureBody["minValue"]
     meanValue = _measureBody["meanValue"]
     medianValue = _measureBody["medianValue"]
-    return f"{maxValue}{minValue}{meanValue}{medianValue}".encode("utf-8").hex()
+    return f"{maxValue}{minValue}{meanValue}{medianValue}".encode("utf-8")
 
 def generate_alerteConfig(one_measure:dict)->str:
     _alerteConfig = one_measure["_alerteConfig"]
@@ -37,4 +37,4 @@ def generate_alerteConfig(one_measure:dict)->str:
     idAlerte = _alerteConfig["idAlerte"]
     date = _alerteConfig["date"]
     valueAlerte = _alerteConfig["valueAlerte"]
-    return f"{version}{idAlerte}{date}{valueAlerte}".encode("utf-8").hex()
+    return f"{version}{idAlerte}{date}{valueAlerte}".encode("utf-8")

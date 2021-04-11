@@ -143,8 +143,12 @@ cython_debug/
 
 # Files
 goal.txt
+abi.json
 
 # Folder
 OLD_DEV
 TEST
 bridge_app
+contract
+
+
