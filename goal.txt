@@ -1,0 +1,60 @@
+
+chaque client a un contrat 
+
+lorsqu'un nouveau client arrive il dit donnez moi les infos poour installer les capteurs
+et nous on lui dit ou mettre des alarmes et ou le legislateurs aussi peu mettre une alarmes
+et nous on a un mapping entre chaque client et son contrat 
+
+si un technicien peut mettre son capteur c'est que si il est liste
+
+le contrat papa gere ensuite les contrats clients
+
+si contrat clients est lourd alors complique de deploye depuis le papa
+
+
+un client peut demander plusieurs mesures
+
+
+Version : (string)
+Type de mesure : (Souffre, Sonore, acidité eau…) ID
+Id prestation : ID
+Date : YYYY-MM-DD HH:mm:SS
+Type temporel : (Horaire, Journalier)
+Type isAlerte : (True False)
+Valeur Max :
+Valeur Moyenne :
+Valeur Médiane : 
+Valeur Min :
+
+struct mesure en-tête (32) { 
+  //V0.1
+  Version : bytes8;
+  Date : YYYYmmddHHii : byte12
+  Type de mesureID : bytes8 - CODE : 4 chiffre/lettre pour la nature physique - 4 chiffre/lettre pour la version
+  Type temporel : bytes1 (Horaire, Journalier) Y m d H i
+  Nb temporel : bytes3
+}
+
+struct mesure donnée (32) { 
+  Valeur Max : bytes8
+  Valeur Moyenne : bytes8
+  Valeur Médiane : bytes8
+  Valeur Min : bytes8
+}
+
+
+
+
+1 tech master peut enregistrer un bridge adresse
+
+--> setBridgeAdress
+--> addMeasure
+--> addAlert
+
+contract_address = "0x523cadf901Eab4b5d235a9Ac9932392CEB4780c7"
+abi_str = "[{'inputs': [{'internalType': 'bytes8', 'name': '_version', 'type': 'bytes8'}, {'internalType': 'address', 'name': '_customerAddress', 'type': 'address'}, {'internalType': 'address', 'name': '_prevContract', 'type': 'address'}, {'internalType': 'uint64', 'name': '_prevContractDate', 'type': 'uint64'}], 'stateMutability': 'nonpayable', 'type': 'constructor'}, {'anonymous': false, 'inputs': [{'indexed': false, 'internalType': 'uint256', 'name': '_service_id', 'type': 'uint256'}, {'indexed': false, 'internalType': 'bytes32', 'name': '_alert', 'type': 'bytes32'}, {'indexed': false, 'internalType': 'address', 'name': '_author', 'type': 'address'}], 'name': 'AlertReceive', 'type': 'event'}, {'anonymous': false, 'inputs': [{'indexed': false, 'internalType': 'string', 'name': 'message', 'type': 'string'}, {'indexed': false, 'internalType': 'address', 'name': '_author', 'type': 'address'}], 'name': 'ContractUpdate', 'type': 'event'}, {'anonymous': false, 'inputs': [{'indexed': false, 'internalType': 'uint256', 'name': '_service_id', 'type': 'uint256'}, {'indexed': false, 'internalType': 'bytes32', 'name': '_header', 'type': 'bytes32'}, {'indexed': false, 'internalType': 'bytes32', 'name': '_body', 'type': 'bytes32'}, {'indexed': false, 'internalType': 'address', 'name': '_author', 'type': 'address'}], 'name': 'MeasureReceive', 'type': 'event'}, {'anonymous': false, 'inputs': [{'indexed': true, 'internalType': 'address', 'name': 'previousOwner', 'type': 'address'}, {'indexed': true, 'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'OwnershipTransferred', 'type': 'event'}, {'anonymous': false, 'inputs': [{'indexed': false, 'internalType': 'uint256', 'name': '_service_id', 'type': 'uint256'}, {'indexed': false, 'internalType': 'string', 'name': 'message', 'type': 'string'}, {'indexed': false, 'internalType': 'address', 'name': '_author', 'type': 'address'}], 'name': 'ServiceUpdate', 'type': 'event'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'bytes32', 'name': '_alertBody', 'type': 'bytes32'}], 'name': 'addAlert', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'bytes8', 'name': '_version', 'type': 'bytes8'}, {'internalType': 'string', 'name': '_description', 'type': 'string'}, {'internalType': 'uint64', 'name': '_dateOn', 'type': 'uint64'}, {'internalType': 'uint64', 'name': '_dateOff', 'type': 'uint64'}, {'internalType': 'bytes8', 'name': '_codeAlert', 'type': 'bytes8'}, {'internalType': 'bytes8', 'name': '_valueAlert', 'type': 'bytes8'}], 'name': 'addAlertConfigCustomer', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'bytes8', 'name': '_version', 'type': 'bytes8'}, {'internalType': 'string', 'name': '_description', 'type': 'string'}, {'internalType': 'uint64', 'name': '_dateOn', 'type': 'uint64'}, {'internalType': 'uint64', 'name': '_dateOff', 'type': 'uint64'}, {'internalType': 'bytes8', 'name': '_codeAlert', 'type': 'bytes8'}, {'internalType': 'bytes8', 'name': '_valueAlert', 'type': 'bytes8'}], 'name': 'addAlertConfigLegislator', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'bytes32', 'name': '_measureHeader', 'type': 'bytes32'}, {'internalType': 'bytes32', 'name': '_measurebody', 'type': 'bytes32'}], 'name': 'addMeasure', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'bytes8', 'name': '_version', 'type': 'bytes8'}, {'internalType': 'string', 'name': '_description', 'type': 'string'}, {'internalType': 'bytes8', 'name': '_measureType', 'type': 'bytes8'}, {'internalType': 'bytes1', 'name': '_timeCode', 'type': 'bytes1'}, {'internalType': 'uint8', 'name': '_nbTime', 'type': 'uint8'}], 'name': 'addService', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}], 'name': 'getAlerts', 'outputs': [{'internalType': 'bytes32[]', 'name': '', 'type': 'bytes32[]'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}], 'name': 'getAllAlertConfigs', 'outputs': [{'components': [{'internalType': 'bytes8', 'name': 'version', 'type': 'bytes8'}, {'internalType': 'string', 'name': 'description', 'type': 'string'}, {'internalType': 'address', 'name': 'legislatorAddress', 'type': 'address'}, {'internalType': 'uint64', 'name': 'dateOn', 'type': 'uint64'}, {'internalType': 'uint64', 'name': 'dateOff', 'type': 'uint64'}, {'internalType': 'bytes8', 'name': 'codeAlert', 'type': 'bytes8'}, {'internalType': 'bytes8', 'name': 'valueAlert', 'type': 'bytes8'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}], 'internalType': 'struct ClientContract.AlertConfig[]', 'name': '', 'type': 'tuple[]'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}], 'name': 'getAllMeasures', 'outputs': [{'internalType': 'bytes32[]', 'name': '', 'type': 'bytes32[]'}, {'internalType': 'bytes32[]', 'name': '', 'type': 'bytes32[]'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'getAllServices', 'outputs': [{'components': [{'internalType': 'bytes8', 'name': 'version', 'type': 'bytes8'}, {'internalType': 'bytes8', 'name': 'measureType', 'type': 'bytes8'}, {'internalType': 'bytes1', 'name': 'timeCode', 'type': 'bytes1'}, {'internalType': 'uint8', 'name': 'nbTime', 'type': 'uint8'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'string', 'name': 'description', 'type': 'string'}, {'internalType': 'address', 'name': 'bridgeAddress', 'type': 'address'}, {'internalType': 'address', 'name': 'techMasterAddress', 'type': 'address'}, {'internalType': 'address', 'name': 'legislatorAddress', 'type': 'address'}, {'components': [{'internalType': 'uint256', 'name': '_value', 'type': 'uint256'}], 'internalType': 'struct Counters.Counter', 'name': 'alertConfigIdCounter', 'type': 'tuple'}, {'components': [{'internalType': 'uint256', 'name': '_value', 'type': 'uint256'}], 'internalType': 'struct Counters.Counter', 'name': 'alertIdCounter', 'type': 'tuple'}, {'components': [{'internalType': 'uint256', 'name': '_value', 'type': 'uint256'}], 'internalType': 'struct Counters.Counter', 'name': 'measureIdCounter', 'type': 'tuple'}], 'internalType': 'struct ClientContract.Service[]', 'name': '', 'type': 'tuple[]'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'uint256', 'name': '_measureId', 'type': 'uint256'}], 'name': 'getMeasuresById', 'outputs': [{'internalType': 'bytes32', 'name': '', 'type': 'bytes32'}, {'internalType': 'bytes32', 'name': '', 'type': 'bytes32'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}], 'name': 'getOneService', 'outputs': [{'components': [{'internalType': 'bytes8', 'name': 'version', 'type': 'bytes8'}, {'internalType': 'bytes8', 'name': 'measureType', 'type': 'bytes8'}, {'internalType': 'bytes1', 'name': 'timeCode', 'type': 'bytes1'}, {'internalType': 'uint8', 'name': 'nbTime', 'type': 'uint8'}, {'internalType': 'bool', 'name': 'isActive', 'type': 'bool'}, {'internalType': 'string', 'name': 'description', 'type': 'string'}, {'internalType': 'address', 'name': 'bridgeAddress', 'type': 'address'}, {'internalType': 'address', 'name': 'techMasterAddress', 'type': 'address'}, {'internalType': 'address', 'name': 'legislatorAddress', 'type': 'address'}, {'components': [{'internalType': 'uint256', 'name': '_value', 'type': 'uint256'}], 'internalType': 'struct Counters.Counter', 'name': 'alertConfigIdCounter', 'type': 'tuple'}, {'components': [{'internalType': 'uint256', 'name': '_value', 'type': 'uint256'}], 'internalType': 'struct Counters.Counter', 'name': 'alertIdCounter', 'type': 'tuple'}, {'components': [{'internalType': 'uint256', 'name': '_value', 'type': 'uint256'}], 'internalType': 'struct Counters.Counter', 'name': 'measureIdCounter', 'type': 'tuple'}], 'internalType': 'struct ClientContract.Service', 'name': '', 'type': 'tuple'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'owner', 'outputs': [{'internalType': 'address', 'name': '', 'type': 'address'}], 'stateMutability': 'view', 'type': 'function'}, {'inputs': [], 'name': 'renounceOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'address', 'name': '_bridgeAddress', 'type': 'address'}], 'name': 'setBridgeAddress', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'address', 'name': '_legislatorAddress', 'type': 'address'}], 'name': 'setLegislatorAddress', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'uint256', 'name': '_serviceId', 'type': 'uint256'}, {'internalType': 'address', 'name': '_techMasterAddress', 'type': 'address'}], 'name': 'setTechMasterAddress', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}, {'inputs': [{'internalType': 'address', 'name': 'newOwner', 'type': 'address'}], 'name': 'transferOwnership', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function'}]"
+
+
+https://ethereum.stackexchange.com/questions/37657/signing-a-raw-transaction-on-contract-function
+
+INFURA_ID = "dcefb713ffab4ec98d6b46da866f1104"

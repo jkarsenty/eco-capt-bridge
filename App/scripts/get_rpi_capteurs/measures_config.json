@@ -3,7 +3,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011010",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -24,7 +24,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011011",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -45,7 +45,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011012",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -66,7 +66,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011013",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -87,7 +87,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011014",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -108,7 +108,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011015",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -129,7 +129,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011016",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -150,7 +150,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011017",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -171,7 +171,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011018",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },
@@ -192,7 +192,7 @@
         "_measureHeader": {
             "version": "00.01.00",
             "date": "202101011019",
-            "measureType": "ACOU0001",
+            "measureType": "SON_0001",
             "timeCode": "i",
             "nbTime": "002"
         },

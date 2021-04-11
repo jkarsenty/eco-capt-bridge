@@ -20,10 +20,19 @@
     </div>
     <br/>
     <div>
-        <form method="POST">
-            <button type="submit" name="send_data" class="btn btn-primary">Send Data</button>
-            <button type="submit" name="init_data" class="btn btn-primary">Init Data</button>
-        </form>
+        <p>
+            <form method="POST">
+                <button type="submit" name="addMeasure" class="btn btn-primary">Send Measure</button>
+                <button type="submit" name="addAlert" class="btn btn-primary">Send Alert </button>
+            </form>
+        </p> 
+    </br>
+        <p>
+            <form method="POST">
+                <button type="submit" name="printMeasure" class="btn btn-primary">Show Measure</button>
+                <button type="submit" name="printAlert" class="btn btn-primary">Show Alert </button>
+            </form>
+        </p>
     </div>
 {% endblock %}
 

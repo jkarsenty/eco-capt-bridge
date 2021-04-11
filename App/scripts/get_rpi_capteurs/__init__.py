@@ -5,6 +5,19 @@ import random
 import json
 import random
 
+def stringToHex(stringValue):
+    hexValue = ""
+    for l in stringValue:
+        hexValue += hex(ord(l))[2:]
+    return hexValue
+
+def hexToString(hexValue):
+    if hexValue[:2] == "0x":
+        hexValue = hexValue[2:]
+    stringValue =  bytes.fromhex(hexValue).decode("ASCII")
+    return stringValue
+
+
 def load_measure_config_example(path_measure_config="App/scripts/get_rpi_capteurs/measures_config.json"):
     with open(path_measure_config,"r") as f:
         measure_config = json.loads(f.read())
@@ -21,7 +34,10 @@ def generate_measureHeader(one_measure:dict)->str:
     measureType = _measureHeader["measureType"]
     timeCode = _measureHeader["timeCode"]
     nbTime = _measureHeader["nbTime"]
-    return f"{version}{date}{measureType}{timeCode}{nbTime}".encode("utf-8")
+    
+    _measureHeader_hex = "0x" + stringToHex(f"{version}{date}{measureType}{timeCode}{nbTime}")
+    assert len(_measureHeader_hex) == 66
+    return _measureHeader_hex
 
 def generate_measureBody(one_measure:dict)->str:
     _measureBody = one_measure["_measureBody"]
@@ -29,7 +45,10 @@ def generate_measureBody(one_measure:dict)->str:
     minValue = _measureBody["minValue"]
     meanValue = _measureBody["meanValue"]
     medianValue = _measureBody["medianValue"]
-    return f"{maxValue}{minValue}{meanValue}{medianValue}".encode("utf-8")
+    
+    _measureBody_hex = "0x" + stringToHex(f"{maxValue}{minValue}{meanValue}{medianValue}")
+    assert len(_measureBody_hex) == 66
+    return _measureBody_hex
 
 def generate_alerteConfig(one_measure:dict)->str:
     _alerteConfig = one_measure["_alerteConfig"]
@@ -37,4 +56,8 @@ def generate_alerteConfig(one_measure:dict)->str:
     idAlerte = _alerteConfig["idAlerte"]
     date = _alerteConfig["date"]
     valueAlerte = _alerteConfig["valueAlerte"]
-    return f"{version}{idAlerte}{date}{valueAlerte}".encode("utf-8")
+    
+    _alerteConfig_hex = "0x" + stringToHex(f"{version}{idAlerte}{date}{valueAlerte}")
+    assert len(_alerteConfig_hex) == 66
+    return _alerteConfig_hex
+
