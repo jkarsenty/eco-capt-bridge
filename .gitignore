@@ -147,7 +147,7 @@ abi.json
 
 # Folder
 OLD_DEV
-TEST
+TEST/test2.py
 bridge_app
 contract
 
