@@ -58,3 +58,11 @@ abi_str = "[{'inputs': [{'internalType': 'bytes8', 'name': '_version', 'type': '
 https://ethereum.stackexchange.com/questions/37657/signing-a-raw-transaction-on-contract-function
 
 INFURA_ID = "dcefb713ffab4ec98d6b46da866f1104"
+
+
+Ce jeu de données correspond aux valeurs demi-horaires de température nationale (normale et réalisée) 
+et de pseudo-rayonnement réalisé utilisées par Enedis en vue d'établir et contrôler 
+des bilans réglementaires d’énergie (reconstitution des flux) exploités pour 
+l'équilibre production/consommation indispensable à la tenue du réseau électrique.
+
+https://www.data.gouv.fr/fr/datasets/donnees-de-temperature-et-de-pseudo-rayonnement-en-j-2/

@@ -53,6 +53,42 @@ def get_serviceId():
     num_service = len(contract.functions.getAllServices().call())
     return 0
 
+
+def create_transaction(_serviceId=None, _alerteConfig=None, _measureHeader=None, _measureBody=None):
+    web3 = app.config["web3"]
+    contract = app.config["contract"]
+    account_1 = app.config["ADDRESS_TECH_MASTER"]
+    private_key = app.config["PRIVATE_KEY"]
+
+    # get nonce
+    nonce = web3.eth.getTransactionCount(account_1)
+    transact_data = {
+        'nonce': nonce,
+        'chainId': 3,  # ropsten
+        'gas': 70000,
+        'gasPrice': web3.toWei('1', 'gwei'),
+
+    }
+    if _alerteConfig != None :
+        tx_data_built = contract.functions.addAlert(
+            _serviceId,
+            _alerteConfig
+        ).buildTransaction(transact_data)
+    else :
+        tx_data_built = contract.functions.addAlert(
+            _serviceId,
+            _measureHeader,
+            _measureBody
+        ).buildTransaction(transact_data)
+
+    ## Signed tx
+    signed_tx = make_signed_transaction(
+        web3, tx_data_built, private_key=private_key)
+
+
+
+pprint(tx_data_built)
+
 @app.route('/')
 def index():
     title = "eco-capt-bridge - Home"
@@ -89,7 +125,9 @@ def addMeasure():
         _serviceId = data["_serviceId"]
         _measureHeader = data["_measureHeader"]
         _measureBody = data["_measureBody"]
-    
+
+    create_transaction(_serviceId=None, _alerteConfig=None,
+                       _measureHeader=_measureHeader, _measureBody=_measureBody)
 
 
 @app.route('/addAlert',methods=['GET','POST'])
@@ -103,6 +141,9 @@ def addAlert():
     else :
         _serviceId = data["_serviceId"]
         _alerteConfig = data["_alerteConfig"]
+
+    create_transaction(_serviceId=None, _alerteConfig=_alerteConfig,
+                       _measureHeader=None, _measureBody=None)
 
 
 

@@ -144,6 +144,7 @@ cython_debug/
 # Files
 goal.txt
 abi.json
+data.csv
 
 # Folder
 OLD_DEV
