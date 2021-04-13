@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 sys.path.append('./App')
 import time 
 from flask import Flask,render_template
@@ -8,7 +9,7 @@ from flask import jsonify, request, url_for, redirect
 from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
 from scripts.get_rpi_capteurs import generate_alerteConfig,generate_measureBody,generate_measureHeader
 from scripts.request_functions import addMeasurePost, addAlertPost
-from scripts.generate_web3_connection import generate_ropsten_url, create_web3_connection
+from scripts.generate_web3_connection import generate_ropsten_url, create_web3_connection, make_signed_transaction
 from scripts.generate_hd_wallet import generate_hdwallet,generate_list_adresses_keys
 
 
@@ -58,7 +59,6 @@ def create_transaction(_serviceId=None, _alerteConfig=None, _measureHeader=None,
     web3 = app.config["web3"]
     contract = app.config["contract"]
     account_1 = app.config["ADDRESS_TECH_MASTER"]
-    private_key = app.config["PRIVATE_KEY"]
 
     # get nonce
     nonce = web3.eth.getTransactionCount(account_1)
@@ -81,13 +81,8 @@ def create_transaction(_serviceId=None, _alerteConfig=None, _measureHeader=None,
             _measureBody
         ).buildTransaction(transact_data)
 
-    ## Signed tx
-    signed_tx = make_signed_transaction(
-        web3, tx_data_built, private_key=private_key)
+    return tx_data_built
 
-
-
-pprint(tx_data_built)
 
 @app.route('/')
 def index():
@@ -114,38 +109,67 @@ def capteurs_v2():
 
 @app.route('/addMeasure',methods=['GET','POST'])
 def addMeasure():
-    data = request.get_json()
-    if data == None:
-        measure_config = load_measure_config_example()
-        one_measure = choose_one_measure(measure_config)
-        _measureHeader = generate_measureHeader(one_measure)
-        _measureBody = generate_measureBody(one_measure)
-        _serviceId = 0
-    else :
-        _serviceId = data["_serviceId"]
-        _measureHeader = data["_measureHeader"]
-        _measureBody = data["_measureBody"]
+    n=0
+    connect_web3()
+    create_wallet()
+    create_contract()
+    get_serviceId()
 
-    create_transaction(_serviceId=None, _alerteConfig=None,
-                       _measureHeader=_measureHeader, _measureBody=_measureBody)
-
+    web3 = app.config["web3"]
+    private_key = app.config["PRIVATE_KEY"]
+    while n< 10:
+        data = request.get_json()
+        if data == None:
+            measure_config = load_measure_config_example()
+            one_measure = choose_one_measure(measure_config)
+            _measureHeader = generate_measureHeader(one_measure)
+            _measureBody = generate_measureBody(one_measure)
+            _serviceId = get_serviceId()
+        else :
+            _serviceId = data["_serviceId"]
+            _measureHeader = data["_measureHeader"]
+            _measureBody = data["_measureBody"]
+        
+        ## build tx
+        tx_data_built =  create_transaction(_serviceId=_serviceId, _alerteConfig=None,
+                                _measureHeader=_measureHeader, _measureBody=_measureBody)
+            
+        ## Signed tx
+        signed_tx = make_signed_transaction(    
+            web3, tx_data_built, private_key=private_key)
+        n+=1
+        time.sleep(3)
 
 @app.route('/addAlert',methods=['GET','POST'])
 def addAlert():
-    data = request.get_json()
-    if data == None:
-        measure_config = load_measure_config_example()
-        one_measure = choose_one_measure(measure_config)
-        _alerteConfig = generate_alerteConfig(one_measure)
-        _serviceId = 0
-    else :
-        _serviceId = data["_serviceId"]
-        _alerteConfig = data["_alerteConfig"]
+    n=0
+    connect_web3()
+    create_wallet()
+    create_contract()
+    get_serviceId()
 
-    create_transaction(_serviceId=None, _alerteConfig=_alerteConfig,
-                       _measureHeader=None, _measureBody=None)
+    web3 = app.config["web3"]
+    private_key = app.config["PRIVATE_KEY"]
+    while n <10:
+        data = request.get_json()
+        if data == None:
+            measure_config = load_measure_config_example()
+            one_measure = choose_one_measure(measure_config)
+            _alerteConfig = generate_alerteConfig(one_measure)
+            _serviceId = 0
+        else :
+            _serviceId = data["_serviceId"]
+            _alerteConfig = data["_alerteConfig"]
 
-
+        ## build tx
+        tx_data_built = create_transaction(_serviceId=_serviceId, _alerteConfig=_alerteConfig,
+                            _measureHeader=None, _measureBody=None)
+        
+        ## Signed tx
+        signed_tx = make_signed_transaction(    
+            web3, tx_data_built, private_key=private_key)
+        n+=1
+        time.sleep(3)
 
 @app.route('/printMeasure',methods=['GET','POST'])
 def printMeasure():

@@ -19,3 +19,7 @@ def create_web3_connection(url:str)->Web3:
     web3 = Web3(Web3.HTTPProvider(url))
     assert web3.isConnected()
     return web3
+
+
+def make_signed_transaction(web3,tx_data:dict,private_key:str):
+    return web3.eth.account.signTransaction(tx_data,private_key)
