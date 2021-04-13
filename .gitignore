@@ -141,14 +141,16 @@ cython_debug/
 # VS-Code
 .vscode
 
+.DS_Store
+
 # Files
 goal.txt
 abi.json
+data.csv
 
 # Folder
 OLD_DEV
 TEST/test2.py
 bridge_app
 contract
-
 
