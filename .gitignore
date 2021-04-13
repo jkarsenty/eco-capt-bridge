@@ -141,6 +141,8 @@ cython_debug/
 # VS-Code
 .vscode
 
+.DS_Store
+
 # Files
 goal.txt
 abi.json
