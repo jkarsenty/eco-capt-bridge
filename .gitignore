@@ -147,11 +147,10 @@ cython_debug/
 goal.txt
 abi.json
 data.csv
-
+*.pdf
 
 # Folder
 OLD_DEV
 TEST
 contract
-Bridge_v2
 
