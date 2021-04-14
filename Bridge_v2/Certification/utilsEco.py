@@ -1,4 +1,5 @@
 ## fonctions pour transformer les donnees mesurees et traitees pour leur donner le format hexa
+
 def hexToString(hexValue):
     if hexValue[:2] == "0x":
         hexValue = hexValue[2:]
