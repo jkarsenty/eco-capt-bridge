@@ -66,3 +66,30 @@ des bilans réglementaires d’énergie (reconstitution des flux) exploités pou
 l'équilibre production/consommation indispensable à la tenue du réseau électrique.
 
 https://www.data.gouv.fr/fr/datasets/donnees-de-temperature-et-de-pseudo-rayonnement-en-j-2/
+
+
+
+alert lie au service id aui ont leur propre liste
+
+jss legis tu te connecte et donc comment je te donne la liste il faut un mapping
+
+
+
+Get all services pour voir si dans un service il y a ton adresse.
+
+bridge install config est branche sur 1 client 
+
+A terme 1 bridge = multi client
+
+On veut 1 seul contrat papa qui fait foi
+on veut enregistrer le kyc du client pour dire qu'il a bien été enregistre avec ses contrats
+tout ça dans le grand registre
+
+Quand qqn annonce un contrat on doit savoir d'ou ça sort
+
+
+l'user va avoir une liste des types de mesures.
+
+vérifie si on tu es owner de fondation et donc je te branche
+sinon je vérifie dans le grand registre et tous les contrats si il y a un contrat qui est a toi.
+
