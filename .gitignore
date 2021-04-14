@@ -148,9 +148,10 @@ goal.txt
 abi.json
 data.csv
 
+
 # Folder
 OLD_DEV
-TEST/test2.py
-bridge_app
+TEST
 contract
+Bridge_v2
 
