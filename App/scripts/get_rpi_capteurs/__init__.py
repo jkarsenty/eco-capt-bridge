@@ -50,7 +50,8 @@ def generate_measureBody(one_measure:dict)->str:
     assert len(_measureBody_hex) == 66
     return _measureBody_hex
 
-def generate_alerteConfig(one_measure:dict)->str:
+
+def generate_alertBody(one_measure: dict) -> str:
     _alerteConfig = one_measure["_alerteConfig"]
     version = _alerteConfig["version"]
     idAlerte = _alerteConfig["idAlerte"]

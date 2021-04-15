@@ -7,82 +7,17 @@ from flask import Flask,render_template
 from flask import jsonify, request, url_for, redirect
 
 from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
-from scripts.get_rpi_capteurs import generate_alerteConfig,generate_measureBody,generate_measureHeader
+from scripts.get_rpi_capteurs import generate_alertBody,generate_measureBody,generate_measureHeader
 from scripts.request_functions import addMeasurePost, addAlertPost
-from scripts.generate_web3_connection import generate_ropsten_url, create_web3_connection, make_signed_transaction
-from scripts.generate_hd_wallet import generate_hdwallet,generate_list_adresses_keys
 
+from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct
 
 app = Flask(__name__)
 
 app.config["INFURA_ID"] = os.getenv("INFURA_ID")
 app.config["SEED"] = os.getenv("SEED")
-app.config["ADDRESS_TECH_MASTER"] = ""
-app.config["PRIVATE_KEY"] = ""
-app.config["web3"] = None
-app.config["contract"] = None
-
-def connect_web3():
-    INFURA_ID = app.config["INFURA_ID"]
-    url = generate_ropsten_url(INFURA_ID)
-    web3 = create_web3_connection(url)
-    app.config["web3"] = web3
-    return web3 
-
-def create_wallet():
-    SEED = app.config["SEED"]
-    hd_wallet = generate_hdwallet(mnemonic=SEED)
-    account_infos = generate_list_adresses_keys(hd_wallet,1)
-
-    account_1_infos = account_infos[0]
-    account_1 = account_1_infos[0]
-    private_key = account_1_infos[1]
-    app.config["ADDRESS_TECH_MASTER"] = account_1
-    app.config["PRIVATE_KEY"] = private_key
-
-def create_contract():
-    contract_address = "0x523cadf901Eab4b5d235a9Ac9932392CEB4780c7"
-    abi_str = '[{"inputs": [{"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "address", "name": "_customerAddress", "type": "address"}, {"internalType": "address", "name": "_prevContract", "type": "address"}, {"internalType": "uint64", "name": "_prevContractDate", "type": "uint64"}], "stateMutability": "nonpayable", "type": "constructor"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_service_id", "type": "uint256"}, {"indexed": false, "internalType": "bytes32", "name": "_alert", "type": "bytes32"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "AlertReceive", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "string", "name": "message", "type": "string"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "ContractUpdate", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_service_id", "type": "uint256"}, {"indexed": false, "internalType": "bytes32", "name": "_header", "type": "bytes32"}, {"indexed": false, "internalType": "bytes32", "name": "_body", "type": "bytes32"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "MeasureReceive", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "previousOwner", "type": "address"}, {"indexed": true, "internalType": "address", "name": "newOwner", "type": "address"}], "name": "OwnershipTransferred", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_service_id", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "message", "type": "string"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "ServiceUpdate", "type": "event"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes32", "name": "_alertBody", "type": "bytes32"}], "name": "addAlert", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "string", "name": "_description", "type": "string"}, {"internalType": "uint64", "name": "_dateOn", "type": "uint64"}, {"internalType": "uint64", "name": "_dateOff", "type": "uint64"}, {"internalType": "bytes8", "name": "_codeAlert", "type": "bytes8"}, {"internalType": "bytes8", "name": "_valueAlert", "type": "bytes8"}], "name": "addAlertConfigCustomer", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "string", "name": "_description", "type": "string"}, {"internalType": "uint64", "name": "_dateOn", "type": "uint64"}, {"internalType": "uint64", "name": "_dateOff", "type": "uint64"}, {"internalType": "bytes8", "name": "_codeAlert", "type": "bytes8"}, {"internalType": "bytes8", "name": "_valueAlert", "type": "bytes8"}], "name": "addAlertConfigLegislator", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes32", "name": "_measureHeader", "type": "bytes32"}, {"internalType": "bytes32", "name": "_measurebody", "type": "bytes32"}], "name": "addMeasure", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "string", "name": "_description", "type": "string"}, {"internalType": "bytes8", "name": "_measureType", "type": "bytes8"}, {"internalType": "bytes1", "name": "_timeCode", "type": "bytes1"}, {"internalType": "uint8", "name": "_nbTime", "type": "uint8"}], "name": "addService", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}], "name": "getAlerts", "outputs": [{"internalType": "bytes32[]", "name": "", "type": "bytes32[]"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}], "name": "getAllAlertConfigs", "outputs": [{"components": [{"internalType": "bytes8", "name": "version", "type": "bytes8"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "legislatorAddress", "type": "address"}, {"internalType": "uint64", "name": "dateOn", "type": "uint64"}, {"internalType": "uint64", "name": "dateOff", "type": "uint64"}, {"internalType": "bytes8", "name": "codeAlert", "type": "bytes8"}, {"internalType": "bytes8", "name": "valueAlert", "type": "bytes8"}, {"internalType": "bool", "name": "isActive", "type": "bool"}], "internalType": "struct ClientContract.AlertConfig[]", "name": "", "type": "tuple[]"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}], "name": "getAllMeasures", "outputs": [{"internalType": "bytes32[]", "name": "", "type": "bytes32[]"}, {"internalType": "bytes32[]", "name": "", "type": "bytes32[]"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "getAllServices", "outputs": [{"components": [{"internalType": "bytes8", "name": "version", "type": "bytes8"}, {"internalType": "bytes8", "name": "measureType", "type": "bytes8"}, {"internalType": "bytes1", "name": "timeCode", "type": "bytes1"}, {"internalType": "uint8", "name": "nbTime", "type": "uint8"}, {"internalType": "bool", "name": "isActive", "type": "bool"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "bridgeAddress", "type": "address"}, {"internalType": "address", "name": "techMasterAddress", "type": "address"}, {"internalType": "address", "name": "legislatorAddress", "type": "address"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "alertConfigIdCounter", "type": "tuple"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "alertIdCounter", "type": "tuple"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "measureIdCounter", "type": "tuple"}], "internalType": "struct ClientContract.Service[]", "name": "", "type": "tuple[]"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "uint256", "name": "_measureId", "type": "uint256"}], "name": "getMeasuresById", "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}, {"internalType": "bytes32", "name": "", "type": "bytes32"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}], "name": "getOneService", "outputs": [{"components": [{"internalType": "bytes8", "name": "version", "type": "bytes8"}, {"internalType": "bytes8", "name": "measureType", "type": "bytes8"}, {"internalType": "bytes1", "name": "timeCode", "type": "bytes1"}, {"internalType": "uint8", "name": "nbTime", "type": "uint8"}, {"internalType": "bool", "name": "isActive", "type": "bool"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "bridgeAddress", "type": "address"}, {"internalType": "address", "name": "techMasterAddress", "type": "address"}, {"internalType": "address", "name": "legislatorAddress", "type": "address"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "alertConfigIdCounter", "type": "tuple"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "alertIdCounter", "type": "tuple"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "measureIdCounter", "type": "tuple"}], "internalType": "struct ClientContract.Service", "name": "", "type": "tuple"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "owner", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "address", "name": "_bridgeAddress", "type": "address"}], "name": "setBridgeAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "address", "name": "_legislatorAddress", "type": "address"}], "name": "setLegislatorAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "address", "name": "_techMasterAddress", "type": "address"}], "name": "setTechMasterAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "newOwner", "type": "address"}], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"}]'
-    abi = json.loads(abi_str)
-    web3 = app.config["web3"]
-    contract = web3.eth.contract(address=contract_address,abi=abi)
-    app.config["contract"] = contract
-    return contract
-
-def get_serviceId():
-    contract = app.config["contract"]
-    num_service = len(contract.functions.getAllServices().call())
-    return 0
-
-
-def create_transaction(_serviceId=None, _alerteConfig=None, _measureHeader=None, _measureBody=None):
-    web3 = app.config["web3"]
-    contract = app.config["contract"]
-    account_1 = app.config["ADDRESS_TECH_MASTER"]
-
-    # get nonce
-    nonce = web3.eth.getTransactionCount(account_1)
-    transact_data = {
-        'nonce': nonce,
-        'chainId': 3,  # ropsten
-        'gas': 70000,
-        'gasPrice': web3.toWei('1', 'gwei'),
-
-    }
-    if _alerteConfig != None :
-        tx_data_built = contract.functions.addAlert(
-            _serviceId,
-            _alerteConfig
-        ).buildTransaction(transact_data)
-    else :
-        tx_data_built = contract.functions.addAlert(
-            _serviceId,
-            _measureHeader,
-            _measureBody
-        ).buildTransaction(transact_data)
-
-    return tx_data_built
-
+app.config["CONTRACT_ADRESSE"] = os.getenv("CONTRACT_ADRESSE")
+app.config["ABI"] = os.getenv("ABI")
 
 @app.route('/')
 def index():
@@ -110,66 +45,81 @@ def capteurs_v2():
 @app.route('/addMeasure',methods=['GET','POST'])
 def addMeasure():
     n=0
-    connect_web3()
-    create_wallet()
-    create_contract()
-    get_serviceId()
-
-    web3 = app.config["web3"]
-    private_key = app.config["PRIVATE_KEY"]
-    while n< 10:
+    infura_id = app.config["INFURA_ID"]
+    seed = app.config["SEED"]
+    contract_address = app.config["CONTRACT_ADRESSE"]
+    abi_str = app.config["ABI"]
+    web3 = connectWeb3(infura_id=infura_id)
+    bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+    contract = generateContract(web3, contract_address, abi_str)
+    
+    while n < 10:
+        print("Sending Data...")
         data = request.get_json()
         if data == None:
             measure_config = load_measure_config_example()
             one_measure = choose_one_measure(measure_config)
             _measureHeader = generate_measureHeader(one_measure)
             _measureBody = generate_measureBody(one_measure)
-            _serviceId = get_serviceId()
+            _serviceId = 0
         else :
             _serviceId = data["_serviceId"]
             _measureHeader = data["_measureHeader"]
             _measureBody = data["_measureBody"]
         
-        ## build tx
-        tx_data_built =  create_transaction(_serviceId=_serviceId, _alerteConfig=None,
-                                _measureHeader=_measureHeader, _measureBody=_measureBody)
-            
-        ## Signed tx
-        signed_tx = make_signed_transaction(    
-            web3, tx_data_built, private_key=private_key)
-        n+=1
-        time.sleep(3)
+
+        tx_hash = addMeasureFunct(
+            web3=web3,
+            contract=contract,
+            bridgeAddress=bridgeAddress,
+            private_key=private_key,
+            _serviceId=_serviceId,
+            _measureHeader=_measureHeader,
+            _measurebody=_measureBody
+            )
+        print("Data Sent to the Blockchain")
+        try:
+            web3.eth.waitForTransactionReceipt(tx_hash)
+        except:
+            time.sleep(60)
+        n += 1
 
 @app.route('/addAlert',methods=['GET','POST'])
 def addAlert():
     n=0
-    connect_web3()
-    create_wallet()
-    create_contract()
-    get_serviceId()
-
-    web3 = app.config["web3"]
-    private_key = app.config["PRIVATE_KEY"]
-    while n <10:
+    infura_id = app.config["INFURA_ID"]
+    seed = app.config["SEED"]
+    contract_address = app.config["CONTRACT_ADRESSE"]
+    abi_str = app.config["ABI"]
+    web3 = connectWeb3(infura_id=infura_id)
+    bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+    contract = generateContract(web3, contract_address, abi_str)
+ 
+    while n < 10:
         data = request.get_json()
         if data == None:
             measure_config = load_measure_config_example()
             one_measure = choose_one_measure(measure_config)
-            _alerteConfig = generate_alerteConfig(one_measure)
+            _alertBody = generate_alertBody(one_measure)
             _serviceId = 0
         else :
             _serviceId = data["_serviceId"]
-            _alerteConfig = data["_alerteConfig"]
+            _alertBody = data["_alerteConfig"]
 
-        ## build tx
-        tx_data_built = create_transaction(_serviceId=_serviceId, _alerteConfig=_alerteConfig,
-                            _measureHeader=None, _measureBody=None)
-        
-        ## Signed tx
-        signed_tx = make_signed_transaction(    
-            web3, tx_data_built, private_key=private_key)
-        n+=1
-        time.sleep(3)
+        tx_hash = addAlertFunct(
+            web3=web3,
+            contract=contract,
+            bridgeAddress=bridgeAddress,
+            private_key=private_key,
+            _serviceId=_serviceId,
+            _alertBody=_alertBody
+        )
+
+        try:
+            web3.eth.waitForTransactionReceipt(tx_hash)
+        except:
+            time.sleep(60)
+        n += 1
 
 @app.route('/printMeasure',methods=['GET','POST'])
 def printMeasure():
@@ -192,7 +142,7 @@ def printAlert():
     if data == None:
         measure_config = load_measure_config_example()
         one_measure = choose_one_measure(measure_config)
-        _alerteConfig = generate_alerteConfig(one_measure)
+        _alerteConfig = generate_alertBody(one_measure)
 
         resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alerteConfig=_alerteConfig)
         data = resp.json()

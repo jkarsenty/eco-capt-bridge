@@ -93,3 +93,9 @@ l'user va avoir une liste des types de mesures.
 vérifie si on tu es owner de fondation et donc je te branche
 sinon je vérifie dans le grand registre et tous les contrats si il y a un contrat qui est a toi.
 
+
+https://www.youtube.com/watch?v=QihjI84Z2tQ
+
+https://github.com/soumilshah1995/transfer-sensor-data-socket-python-iot
+
+https://soumilshah1995.blogspot.com/2019/04/server-and-client-send-actual-sensor.html

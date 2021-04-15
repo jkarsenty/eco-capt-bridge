@@ -1,6 +1,14 @@
 import random
 import json
 import datetime as dt
+import numpy as np
+
+def random_data():
+
+    x1 = np.random.randint(0, 55, None)         # Dummy temperature
+    y1 = np.random.randint(0, 45, None)         # Dummy humidigy
+    my_sensor = f"{x1},{y1}"
+    return my_sensor                            # return data seperated by comma
 
 
 def generate_fake_data(nb_data:int=10,path_measures_config:str="Bridge_v2/Sensors/measures_config.json"):
