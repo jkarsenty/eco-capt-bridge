@@ -10,26 +10,22 @@
 
 {% block content%}
     <div class="container">
-        <h1>Welcome in Eco-Capt Bridge</h1>
-       <p> You can send new alerts & measures to the smart contract in the Capteurs page</p>
-       <p> You can also show example of alerts & measures sent to the smart contract in the Capteurs page</p>
+        <h1>{{title}}</h1>
+    </div>
+    <br/>
+    <div class="container">
+        <h4>Owner page</h4>
+        <p> Here the owner can register the techMasterAdress</p>
     </div>
     <br />
     <div class="container">
-        <p>
-        <form method="POST">
-            <div>
-                <label for="serviceId">Service Id</label>
-                <input type="text" class="form-control" id="serviceId" name="serviceId" placeholder="uint">
-            </div>
-            <br />
-            <div>
-                <label for="techMasterAdress">Tech Master Address</label>
-                <input type="text" class="form-control" id="techMasterAdress" name="techMasterAdress" placeholder="address">
-            </div>
-            <br />
-            <button type="submit" name="setTechMaster" class="btn btn-primary">setTechMaster</button>
-        </form>
-        </p>
+        <h4>Tech Master page</h4>
+        <p> Here the Tech Master can register the bridgeAddress</p>
+    </div>
+    <br />
+    <div class="container">
+        <h4>Send Data page</h4>
+        <p> You can send alerts & measures to the smart contract in the Send Data Page </p>
+        <p> You can also show examples of alerts & measures sent to the smart contract in the Send Data Page</p>
     </div>
 {% endblock %}

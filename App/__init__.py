@@ -34,11 +34,17 @@ except :
         assert False 
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    title = "eco-capt-bridge - Home"
+    title = "Eco-Capt-Bridge - Home"
+    return render_template("index.html",title=title)
+
+
+@app.route('/ownerPage', methods=['GET', 'POST'])
+def ownerPage():
+    title = "Eco-Capt-Bridge - Owner Page"
     if request.method == "POST":
-        data = request.get_json()
+
         if "setTechMaster" in request.form:
             infura_id = app.config["INFURA_ID"]
             seed = app.config["SEED"]
@@ -48,21 +54,54 @@ def index():
             bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
             contract = generateContract(web3, contract_address, abi_str)
 
+            _serviceId = int(request.form["serviceId"])
+            _techMasterAddress = request.form["techMasterAdress"]
+
             setTechMasterAddress(
                 web3=web3,
                 contract=contract,
                 addressFrom=bridgeAddress,
                 private_key=private_key,
-                _serviceId=request.form["serviceId"],
-                _techMasterAddress=request.form["techMasterAdress"]
+                _serviceId=_serviceId,
+                _techMasterAddress=_techMasterAddress
             )
-        return render_template("index.html", title=title)
+        return render_template("ownerPage.html", title=title)
     else:
-        return render_template("index.html",title=title)
+        return render_template("ownerPage.html", title=title)
+
+
+@app.route('/techMasterPage', methods=['GET', 'POST'])
+def techMasterPage():
+    title = "Eco-Capt-Bridge - techMasterPage"
+    
+    if request.method == "POST":
+        if "bridgeAddress" in request.form:
+            infura_id = app.config["INFURA_ID"]
+            seed = app.config["SEED"]
+            contract_address = app.config["CONTRACT_ADRESS"]
+            abi_str = app.config["ABI"]
+            web3 = connectWeb3(infura_id=infura_id)
+            bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+            contract = generateContract(web3, contract_address, abi_str)
+
+            _serviceId = int(request.form["serviceId"])
+            _techMasterAddress = request.form["bridgeAddress"]
+
+            setTechMasterAddress(
+                web3=web3,
+                contract=contract,
+                addressFrom=bridgeAddress,
+                private_key=private_key,
+                _serviceId=_serviceId,
+                _techMasterAddress=_techMasterAddress
+            )
+        return render_template("techMasterPage.html", title=title)
+    else:
+        return render_template("techMasterPage.html", title=title)
 
 @app.route('/capteurs_v2',methods=['GET','POST'])
 def capteurs_v2():
-    title = "eco-capt-bridge - Capteurs Button"
+    title = "Eco-Capt-Bridge - Send Data"
     if request.method == "POST" :
         if "addMeasure" in request.form :
             return redirect(url_for("addMeasure"))
