@@ -69,7 +69,7 @@ def addMeasure():
     contract = generateContract(web3, contract_address, abi_str)
     
     while n < 10:
-        print("Sending Data...")
+        app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
             measure_config = load_measure_config_example()
@@ -92,11 +92,12 @@ def addMeasure():
             _measureHeader=_measureHeader,
             _measurebody=_measureBody
             )
-        print("Data Sent to the Blockchain")
-        try:
-            web3.eth.waitForTransactionReceipt(tx_hash)
-        except:
-            time.sleep(60)
+        app.logger.info("Data Sent to the Blockchain")
+        time.sleep(120)
+        # try:
+        #     web3.eth.waitForTransactionReceipt(tx_hash)
+        # except:
+        #     time.sleep(60)
         n += 1
 
 @app.route('/addAlert',methods=['GET','POST'])
@@ -111,6 +112,7 @@ def addAlert():
     contract = generateContract(web3, contract_address, abi_str)
  
     while n < 10:
+        app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
             measure_config = load_measure_config_example()
@@ -130,14 +132,17 @@ def addAlert():
             _alertBody=_alertBody
         )
 
-        try:
-            web3.eth.waitForTransactionReceipt(tx_hash)
-        except:
-            time.sleep(60)
+        app.logger.info("Data Sent to the Blockchain")
+        # try:
+        #     web3.eth.waitForTransactionReceipt(tx_hash)
+        # except:
+        #     time.sleep(60)
+        time.sleep(120)
         n += 1
 
 @app.route('/printMeasure',methods=['GET','POST'])
 def printMeasure():
+    app.logger.info("Show Measure")
     data = request.get_json()
     if data == None:
         measure_config = load_measure_config_example()
@@ -153,6 +158,7 @@ def printMeasure():
 
 @app.route('/printAlert',methods=['GET','POST'])
 def printAlert():
+    app.logger.info("Show Alert")
     data = request.get_json()
     if data == None:
         measure_config = load_measure_config_example()
