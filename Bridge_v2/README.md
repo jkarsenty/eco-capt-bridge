@@ -16,7 +16,7 @@ And then how to push thoses measures into the Storage part of the Bridge.
 Our sensors for the tests are measuring the temperature and humidity.  
 We use a Raspberry Pi 3, and DHT sensors.  
 
-<img src="http://www.circuitbasics.com/wp-content/uploads/2015/12/DHT11-Pinout-for-three-pin-and-four-pin-types-2.jpg" , width=600, height=300>
+<img alt="Sensors" src="http://www.circuitbasics.com/wp-content/uploads/2015/12/DHT11-Pinout-for-three-pin-and-four-pin-types-2.jpg" , width=600, height=300 />
 
 ## **Storage Part**
 *Here we only read the data in the blockchain.*   
