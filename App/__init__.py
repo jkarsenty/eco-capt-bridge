@@ -14,10 +14,25 @@ from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContra
 
 app = Flask(__name__)
 
-app.config["INFURA_ID"] = os.getenv("INFURA_ID")
-app.config["SEED"] = os.getenv("SEED")
-app.config["CONTRACT_ADRESSE"] = os.getenv("CONTRACT_ADRESSE")
-app.config["ABI"] = os.getenv("ABI")
+try :
+    app.config["INFURA_ID"] = os.getenv("INFURA_ID")
+    app.config["SEED"] = os.getenv("SEED")
+    app.config["CONTRACT_ADRESS"] = os.getenv("CONTRACT_ADRESS")
+    app.config["ABI"] = os.getenv("ABI")
+    assert app.config["INFURA_ID"] != None and app.config["SEED"] != None
+    assert app.config["CONTRACT_ADRESS"] != None and app.config["ABI"] != None
+except :
+    try :
+        app.config["INFURA_ID"] = os.environ["INFURA_ID"]
+        app.config["SEED"] = os.environ["SEED"]
+        app.config["CONTRACT_ADRESS"] = os.environ["CONTRACT_ADRESS"]
+        app.config["ABI"] = os.environ["ABI"]
+        assert app.config["INFURA_ID"] != None and app.config["SEED"] != None
+        assert app.config["CONTRACT_ADRESS"] != None and app.config["ABI"] != None
+    except :
+        print("error")
+        assert False 
+
 
 @app.route('/')
 def index():
@@ -47,7 +62,7 @@ def addMeasure():
     n=0
     infura_id = app.config["INFURA_ID"]
     seed = app.config["SEED"]
-    contract_address = app.config["CONTRACT_ADRESSE"]
+    contract_address = app.config["CONTRACT_ADRESS"]
     abi_str = app.config["ABI"]
     web3 = connectWeb3(infura_id=infura_id)
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
@@ -89,7 +104,7 @@ def addAlert():
     n=0
     infura_id = app.config["INFURA_ID"]
     seed = app.config["SEED"]
-    contract_address = app.config["CONTRACT_ADRESSE"]
+    contract_address = app.config["CONTRACT_ADRESS"]
     abi_str = app.config["ABI"]
     web3 = connectWeb3(infura_id=infura_id)
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
