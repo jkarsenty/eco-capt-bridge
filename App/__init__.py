@@ -10,7 +10,7 @@ from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_mea
 from scripts.get_rpi_capteurs import generate_alertBody,generate_measureBody,generate_measureHeader
 from scripts.request_functions import addMeasurePost, addAlertPost
 
-from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct
+from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct, setTechMasterAddress
 
 app = Flask(__name__)
 
@@ -34,11 +34,31 @@ except :
         assert False 
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     title = "eco-capt-bridge - Home"
-    return render_template("index.html",title=title)
+    if request.method == "POST":
+        data = request.get_json()
+        if "setTechMaster" in request.form:
+            infura_id = app.config["INFURA_ID"]
+            seed = app.config["SEED"]
+            contract_address = app.config["CONTRACT_ADRESS"]
+            abi_str = app.config["ABI"]
+            web3 = connectWeb3(infura_id=infura_id)
+            bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+            contract = generateContract(web3, contract_address, abi_str)
 
+            setTechMasterAddress(
+                web3=web3,
+                contract=contract,
+                addressFrom=bridgeAddress,
+                private_key=private_key,
+                _serviceId=request.form["serviceId"],
+                _techMasterAddress=request.form["techMasterAdress"]
+            )
+        return render_template("index.html", title=title)
+    else:
+        return render_template("index.html",title=title)
 
 @app.route('/capteurs_v2',methods=['GET','POST'])
 def capteurs_v2():
@@ -68,7 +88,7 @@ def addMeasure():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
     
-    while n < 10:
+    while n < 5:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
@@ -76,7 +96,7 @@ def addMeasure():
             one_measure = choose_one_measure(measure_config)
             _measureHeader = generate_measureHeader(one_measure)
             _measureBody = generate_measureBody(one_measure)
-            _serviceId = 0
+            _serviceId = 2
         else :
             _serviceId = data["_serviceId"]
             _measureHeader = data["_measureHeader"]
@@ -93,12 +113,14 @@ def addMeasure():
             _measurebody=_measureBody
             )
         app.logger.info("Data Sent to the Blockchain")
-        time.sleep(120)
-        # try:
-        #     web3.eth.waitForTransactionReceipt(tx_hash)
-        # except:
-        #     time.sleep(60)
+        time.sleep(20)
+        try:
+            web3.eth.waitForTransactionReceipt(tx_hash)
+        except:
+            time.sleep(30)
         n += 1
+
+    return redirect(url_for("capteurs_v2"))
 
 @app.route('/addAlert',methods=['GET','POST'])
 def addAlert():
@@ -111,14 +133,14 @@ def addAlert():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
  
-    while n < 10:
+    while n < 5:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
             measure_config = load_measure_config_example()
             one_measure = choose_one_measure(measure_config)
             _alertBody = generate_alertBody(one_measure)
-            _serviceId = 0
+            _serviceId = 2
         else :
             _serviceId = data["_serviceId"]
             _alertBody = data["_alerteConfig"]
@@ -133,12 +155,15 @@ def addAlert():
         )
 
         app.logger.info("Data Sent to the Blockchain")
-        # try:
-        #     web3.eth.waitForTransactionReceipt(tx_hash)
-        # except:
-        #     time.sleep(60)
-        time.sleep(120)
+        time.sleep(20)
+        try:
+            web3.eth.waitForTransactionReceipt(tx_hash)
+        except:
+            time.sleep(30)
+
         n += 1
+
+    return redirect(url_for("capteurs_v2"))
 
 @app.route('/printMeasure',methods=['GET','POST'])
 def printMeasure():

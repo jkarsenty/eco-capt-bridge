@@ -14,4 +14,22 @@
        <p> You can send new alerts & measures to the smart contract in the Capteurs page</p>
        <p> You can also show example of alerts & measures sent to the smart contract in the Capteurs page</p>
     </div>
+    <br />
+    <div class="container">
+        <p>
+        <form method="POST">
+            <div>
+                <label for="serviceId">Service Id</label>
+                <input type="text" class="form-control" id="serviceId" name="serviceId" placeholder="uint">
+            </div>
+            <br />
+            <div>
+                <label for="techMasterAdress">Tech Master Address</label>
+                <input type="text" class="form-control" id="techMasterAdress" name="techMasterAdress" placeholder="address">
+            </div>
+            <br />
+            <button type="submit" name="setTechMaster" class="btn btn-primary">setTechMaster</button>
+        </form>
+        </p>
+    </div>
 {% endblock %}

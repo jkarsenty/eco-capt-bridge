@@ -139,7 +139,7 @@ def generate_tx_data(web3, addressFrom: str):
     nonce = web3.eth.getTransactionCount(addressFrom)
     tx_data = {
         'nonce': nonce,
-        'gas': 100000,
+        'gas': 500000,
         'gasPrice': web3.toWei(2, 'gwei'),
     }
     return tx_data
