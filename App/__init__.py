@@ -182,7 +182,7 @@ def addAlert():
             _serviceId = 2
         else :
             _serviceId = data["_serviceId"]
-            _alertBody = data["_alerteConfig"]
+            _alertBody = data["_alertBody"]
 
         tx_hash = addAlertFunct(
             web3=web3,
@@ -227,9 +227,9 @@ def printAlert():
     if data == None:
         measure_config = load_measure_config_example()
         one_measure = choose_one_measure(measure_config)
-        _alerteConfig = generate_alertBody(one_measure)
+        _alertBody = generate_alertBody(one_measure)
 
-        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alerteConfig=_alerteConfig)
+        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alertBody=_alertBody)
         data = resp.json()
 
     return jsonify(data)
@@ -238,4 +238,15 @@ def printAlert():
 @app.route('/sensors', methods=['POST'])
 def sensors():
     data = request.get_json()
+    # process_data_sensors(data)
+    
+    # if _alertBody != None:
+    #     _alertBody = generate_alertBody()
+    
+    # elif _sendMeasures != None:
+    #     _measureHeader = generate_measureHeader()
+    #     _measureBody = generate_measureBody()
+
+    # SEND TO SMART CONTRACT
+
     return jsonify(data)

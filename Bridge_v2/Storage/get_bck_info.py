@@ -1,1 +1,0 @@
-## recupere les seuils, frequences, et autres infos inscrits dans la blockchain
