@@ -17,7 +17,6 @@ def hexToString(hexValue):
     stringValue =  bytes.fromhex(hexValue).decode("ASCII")
     return stringValue
 
-
 def load_measure_config_example(path_measure_config="App/scripts/get_rpi_capteurs/measures_config.json"):
     with open(path_measure_config,"r") as f:
         measure_config = json.loads(f.read())
@@ -26,7 +25,44 @@ def load_measure_config_example(path_measure_config="App/scripts/get_rpi_capteur
 def choose_one_measure(measure_config:List[dict]):
     one_measure = random.choice(measure_config)
     return one_measure 
+
+
+def generate_one_measure(
+    temperature:int,
+    humidity:int,
+    version:str="00.01.00",
+    measureType:str="SON_0001",
+    timeCode:str="i",
+    nbTime:str="001"
+    ):
     
+    one_measure = {
+        "_measureHeader": {
+            "version": version,
+            "date": "202104131005",
+            "measureType":measureType ,
+            "timeCode": timeCode,
+            "nbTime": "001"
+        },
+        "_measureBody": {
+            "maxValue": "00000045",
+            "minValue": "00000009",
+            "meanValue": "00000026",
+            "medianValue": "00000018"
+        },
+        "_alertBody": {
+            "version": "00.01.00",
+            "idAlerte": "0002",
+            "date": "202104131005",
+            "valueAlerte": "00000009"
+        }
+    }
+
+    return one_measure
+
+
+    
+
 def generate_measureHeader(one_measure:dict)->str:
     _measureHeader = one_measure["_measureHeader"]
     version = _measureHeader["version"]
@@ -52,11 +88,11 @@ def generate_measureBody(one_measure:dict)->str:
 
 
 def generate_alertBody(one_measure: dict) -> str:
-    _alerteConfig = one_measure["_alerteConfig"]
-    version = _alerteConfig["version"]
-    idAlerte = _alerteConfig["idAlerte"]
-    date = _alerteConfig["date"]
-    valueAlerte = _alerteConfig["valueAlerte"]
+    _alertBody = one_measure["_alertBody"]
+    version = _alertBody["version"]
+    idAlerte = _alertBody["idAlerte"]
+    date = _alertBody["date"]
+    valueAlerte = _alertBody["valueAlerte"]
     
     _alerteConfig_hex = "0x" + stringToHex(f"{version}{idAlerte}{date}{valueAlerte}")
     assert len(_alerteConfig_hex) == 66

@@ -99,3 +99,24 @@ https://www.youtube.com/watch?v=QihjI84Z2tQ
 https://github.com/soumilshah1995/transfer-sensor-data-socket-python-iot
 
 https://soumilshah1995.blogspot.com/2019/04/server-and-client-send-actual-sensor.html
+
+
+Pour configurer le ssh du raspberry Pi :
+https://www.youtube.com/watch?v=lZ3AMFr9oMQ
+
+Install Breadbord sur raspberry :
+https://www.youtube.com/watch?v=6Hau75Zkpj4
+
+Pour créer un serveur de stockage sur rpi:
+https://www.youtube.com/watch?v=kTGwxEpJpOM
+
+Install dht22 :
+- sensors: 
+blanc (red) : -
+marron (orange) :out
+noir (yellow): +
+
+- rpi :
+blanc (red) : ground
+marron (orange) : gpio4
+noir (yellow) : 3.3
