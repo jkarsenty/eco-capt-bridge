@@ -235,3 +235,7 @@ def printAlert():
     return jsonify(data)
 
 
+@app.route('/sensors', methods=['POST'])
+def sensors():
+    data = request.get_json()
+    return jsonify(data)

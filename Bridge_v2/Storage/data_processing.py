@@ -9,8 +9,8 @@ import threading
 import time
 
 
-HOST = 'https://eco-capt-bridge.herokuapp.com' # '192.168.0.111'  # The server's hostname or IP address
-PORT = 80       # The port used by the server
+HOST = '192.168.0.37' #'https://eco-capt-bridge.herokuapp.com'  # The server's hostname or IP address
+PORT = 65432       # The port used by the server
 
 
 def process_data_from_server(x):
@@ -19,6 +19,7 @@ def process_data_from_server(x):
 
 
 def my_client():
+    # run the client after 11 seconds
     threading.Timer(11, my_client).start()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
