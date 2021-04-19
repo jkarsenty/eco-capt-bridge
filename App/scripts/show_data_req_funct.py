@@ -20,8 +20,7 @@ def addMeasurePost(endpoint:str,_serviceId:int,_measureHeader:str,_measureBody:s
     headers = {
         'Content-Type': 'application/json',
     }
-
-    # data = '{ "_serviceId":' + str(_serviceId) + ', "_measureHeader":"' + _measureHeader + '", "_measureBody":"' + _measureBody + '"}'
+    
     data = {
         "_serviceId":_serviceId, 
         "_measureHeader":_measureHeader,
@@ -42,7 +41,6 @@ def addAlertPost_v0(endpoint:str, _serviceId:int, _alertConfigId :int, _alertBod
          "_alertConfigId": _alertConfigId,
           "_alertBody":_alertBody
          }
-    #print(data)
 
     response = requests.post(f'http://127.0.0.1:5000/{endpoint}', headers=headers, json=data)
 
@@ -54,8 +52,6 @@ def addAlertPost(endpoint:str, _serviceId:int,_alertConfigId:int, _alertBody:str
         'Content-Type': 'application/json',
     }
 
-    # data = '{ "_serviceId":' + str(_serviceId) + ', "_alertBody":"' + _alertBody + '"}'
-    #print(data)
     data = {
          "_serviceId":_serviceId,
          "_alertConfigId": _alertConfigId,

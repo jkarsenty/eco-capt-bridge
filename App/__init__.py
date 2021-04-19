@@ -8,9 +8,9 @@ from flask import jsonify, request, url_for, redirect
 
 from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
 from scripts.get_rpi_capteurs import generate_alertBody,generate_measureBody,generate_measureHeader
-from scripts.request_functions import addMeasurePost, addAlertPost
 
 from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct, setTechMasterAddress
+from scripts.show_data_req_funct import addMeasurePost, addAlertPost
 
 app = Flask(__name__)
 
@@ -163,7 +163,6 @@ def addMeasure():
 
 @app.route('/addAlert',methods=['GET','POST'])
 def addAlert():
-    n=0
     infura_id = app.config["INFURA_ID"]
     seed = app.config["SEED"]
     contract_address = app.config["CONTRACT_ADRESS"]
@@ -172,38 +171,35 @@ def addAlert():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
  
-    while n < 1:
-        app.logger.info("Sending Data...")
-        data = request.get_json()
-        if data == None:
-            measure_config = load_measure_config_example()
-            one_measure = choose_one_measure(measure_config)
-            _alertBody = generate_alertBody(one_measure)
-            _alertConfigId = 0
-            _serviceId = 0
-        else :
-            _serviceId = data["_serviceId"]
-            _alertConfigId = data["_alertConfigId"]
-            _alertBody = data["_alertBody"]
+    app.logger.info("Sending Alert...")
+    data = request.get_json()
+    if data == None:
+        measure_config = load_measure_config_example()
+        one_measure = choose_one_measure(measure_config)
+        _alertBody = generate_alertBody(one_measure)
+        _alertConfigId = 0
+        _serviceId = 0
+    else :
+        _serviceId = data["_serviceId"]
+        _alertConfigId = data["_alertConfigId"]
+        _alertBody = data["_alertBody"]
 
-        tx_hash = addAlertFunct(
-            web3=web3,
-            contract=contract,
-            bridgeAddress=bridgeAddress,
-            private_key=private_key,
-            _serviceId=_serviceId,
-            _alertConfigId = _alertConfigId,
-            _alertBody=_alertBody
-        )
+    tx_hash = addAlertFunct(
+        web3=web3,
+        contract=contract,
+        bridgeAddress=bridgeAddress,
+        private_key=private_key,
+        _serviceId=_serviceId,
+        _alertConfigId = _alertConfigId,
+        _alertBody=_alertBody
+    )
 
-        app.logger.info("Data Sent to the Blockchain")
-        time.sleep(20)
-        try:
-            web3.eth.waitForTransactionReceipt(tx_hash)
-        except:
-            time.sleep(30)
-
-        n += 1
+    app.logger.info("Alert Sent to the Blockchain")
+    time.sleep(20)
+    try:
+        web3.eth.waitForTransactionReceipt(tx_hash)
+    except:
+        time.sleep(30)
 
     return redirect(url_for("capteurs_v2"))
 
