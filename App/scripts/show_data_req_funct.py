@@ -1,5 +1,5 @@
+## FUNCTIONS TO SHOW EXAMPLES OF MEASURES AND ALERTS
 import requests
-
 
 def addMeasurePost_v0(endpoint:str,_serviceId:int,_measureHeader:str,_measureBody:str):
     headers = {

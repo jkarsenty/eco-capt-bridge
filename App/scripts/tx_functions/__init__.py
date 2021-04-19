@@ -193,3 +193,11 @@ def addMeasureFunct(web3, contract, bridgeAddress: str, private_key: str, _servi
         web3, tx_data_built, private_key=private_key)
     tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     return tx_hash
+
+def get_valueAlert(contract):
+    _serviceAlertConfig = contract.functions.getAllAlertConfigs().call()
+    print(len(_serviceAlertConfig))
+    _valueAlert = _serviceAlertConfig[-1][-1]
+    return _valueAlert
+# _valueAlert = get_valueAlert(contract)
+# print(_valueAlert)
