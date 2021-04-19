@@ -1,9 +1,7 @@
 import json
 from typing import List
 import random
-
-import json
-import random
+import datetime as dt
 
 def stringToHex(stringValue):
     hexValue = ""
@@ -26,23 +24,35 @@ def choose_one_measure(measure_config:List[dict]):
     one_measure = random.choice(measure_config)
     return one_measure 
 
+def decrypt_data_sensors(data):
+    temperature = data["temperature"]
+    humidity = data["humidity"]
+    timestamp = data["timestamp"]
+    datetime_obj = dt.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+    # print(datetime_obj)
+    timestamp = datetime_obj.strftime('%Y%m%d%H%M')
+    # print(timestamp)
 
+    return temperature, humidity, timestamp
+    
 def generate_one_measure(
     temperature:int,
     humidity:int,
+    timestamp:str,
     version:str="00.01.00",
     measureType:str="SON_0001",
     timeCode:str="i",
-    nbTime:str="001"
+    nbTime:str="001",
+    idAlert:str="0002"
     ):
     
     one_measure = {
         "_measureHeader": {
             "version": version,
-            "date": "202104131005",
+            "date": timestamp,
             "measureType":measureType ,
             "timeCode": timeCode,
-            "nbTime": "001"
+            "nbTime": nbTime
         },
         "_measureBody": {
             "maxValue": "00000045",
@@ -51,9 +61,9 @@ def generate_one_measure(
             "medianValue": "00000018"
         },
         "_alertBody": {
-            "version": "00.01.00",
-            "idAlerte": "0002",
-            "date": "202104131005",
+            "version": version,
+            "idAlert": idAlert,
+            "date": timestamp,
             "valueAlerte": "00000009"
         }
     }

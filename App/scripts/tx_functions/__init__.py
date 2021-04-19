@@ -169,10 +169,11 @@ def setTechMasterAddress(web3, contract, addressFrom: str, private_key: str, _se
     return tx_hash
 
 
-def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _alertBody: str):
+def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _alertConfigId:int, _alertBody: str):
     tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
     tx_data_built = contract.functions.addAlert(
         _serviceId=_serviceId,
+        _alertConfigId=_alertConfigId,
         _alertBody=_alertBody).buildTransaction(tx_data)
 
     signed_tx = make_signed_transaction(

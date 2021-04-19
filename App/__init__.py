@@ -127,7 +127,7 @@ def addMeasure():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
     
-    while n < 5:
+    while n < 20:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
@@ -135,7 +135,7 @@ def addMeasure():
             one_measure = choose_one_measure(measure_config)
             _measureHeader = generate_measureHeader(one_measure)
             _measureBody = generate_measureBody(one_measure)
-            _serviceId = 2
+            _serviceId = 3
         else :
             _serviceId = data["_serviceId"]
             _measureHeader = data["_measureHeader"]
@@ -152,7 +152,7 @@ def addMeasure():
             _measurebody=_measureBody
             )
         app.logger.info("Data Sent to the Blockchain")
-        time.sleep(20)
+        time.sleep(30)
         try:
             web3.eth.waitForTransactionReceipt(tx_hash)
         except:
@@ -172,16 +172,18 @@ def addAlert():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
  
-    while n < 5:
+    while n < 1:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
             measure_config = load_measure_config_example()
             one_measure = choose_one_measure(measure_config)
             _alertBody = generate_alertBody(one_measure)
-            _serviceId = 2
+            _alertConfigId = 0
+            _serviceId = 0
         else :
             _serviceId = data["_serviceId"]
+            _alertConfigId = data["_alertConfigId"]
             _alertBody = data["_alertBody"]
 
         tx_hash = addAlertFunct(
@@ -190,6 +192,7 @@ def addAlert():
             bridgeAddress=bridgeAddress,
             private_key=private_key,
             _serviceId=_serviceId,
+            _alertConfigId = _alertConfigId,
             _alertBody=_alertBody
         )
 
@@ -229,7 +232,7 @@ def printAlert():
         one_measure = choose_one_measure(measure_config)
         _alertBody = generate_alertBody(one_measure)
 
-        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alertBody=_alertBody)
+        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alertConfigId = 0,_alertBody=_alertBody)
         data = resp.json()
 
     return jsonify(data)
