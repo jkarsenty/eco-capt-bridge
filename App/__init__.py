@@ -143,7 +143,6 @@ def addMeasure():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
     
-    while n < 10:
     while n < 20:
         app.logger.info("Sending Data...")
         data = request.get_json()
@@ -188,35 +187,6 @@ def addAlert():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
  
-    while n < 2:
-        app.logger.info("Sending Data...")
-        data = request.get_json()
-        if data == None:
-            measure_config = load_measure_config_example()
-            one_measure = choose_one_measure(measure_config)
-            _alertBody = generate_alertBody(one_measure)
-            _serviceId = 2
-        else :
-            _serviceId = data["_serviceId"]
-            _alertBody = data["_alertBody"]
-
-        tx_hash = addAlertFunct(
-            web3=web3,
-            contract=contract,
-            bridgeAddress=bridgeAddress,
-            private_key=private_key,
-            _serviceId=_serviceId,
-            _alertBody=_alertBody
-        )
-
-        app.logger.info("Data Sent to the Blockchain")
-        time.sleep(40)
-        try:
-            web3.eth.waitForTransactionReceipt(tx_hash)
-        except:
-            time.sleep(30)
-
-        n += 1
     app.logger.info("Sending Alert...")
     data = request.get_json()
     if data == None:
