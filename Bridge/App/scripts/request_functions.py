@@ -24,12 +24,12 @@ def addMeasurePost(endpoint:str,_serviceId:int,_measureHeader:str,_measureBody:s
     return response
 
 
-def addAlertPost_v0(endpoint:str, _serviceId:int, _alerteConfig:str):
+def addAlertPost_v0(endpoint:str, _serviceId:int, _alertBody:str):
     headers = {
         'Content-Type': 'application/json',
     }
 
-    data = '{ "_serviceId":' + str(_serviceId) + ', "_alerteConfig":"' + _alerteConfig + '"}'
+    data = '{ "_serviceId":' + str(_serviceId) + ', "_alertBody":"' + _alertBody + '"}'
     #print(data)
 
     response = requests.post(f'http://127.0.0.1:5000/{endpoint}', headers=headers, data=data)
@@ -37,12 +37,12 @@ def addAlertPost_v0(endpoint:str, _serviceId:int, _alerteConfig:str):
     assert response.status_code == 200,response.status_code
     return response
 
-def addAlertPost(endpoint:str, _serviceId:int, _alerteConfig:str):
+def addAlertPost(endpoint:str, _serviceId:int, _alertBody:str):
     headers = {
         'Content-Type': 'application/json',
     }
 
-    data = '{ "_serviceId":' + str(_serviceId) + ', "_alerteConfig":"' + _alerteConfig + '"}'
+    data = '{ "_serviceId":' + str(_serviceId) + ', "_alertBody":"' + _alertBody + '"}'
     #print(data)
 
     response = requests.post(f'https://eco-capt-bridge.herokuapp.com/{endpoint}', headers=headers, data=data)

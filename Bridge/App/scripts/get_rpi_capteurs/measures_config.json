@@ -13,7 +13,7 @@
             "meanValue": "00000026",
             "medianValue": "00000018"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0002",
             "date": "202104131005",
@@ -34,7 +34,7 @@
             "meanValue": "00000041",
             "medianValue": "00000025"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0002",
             "date": "202104131008",
@@ -55,7 +55,7 @@
             "meanValue": "00000031",
             "medianValue": "00000019"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0002",
             "date": "202104131011",
@@ -76,7 +76,7 @@
             "meanValue": "00000036",
             "medianValue": "00000024"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0001",
             "date": "202104131014",
@@ -97,7 +97,7 @@
             "meanValue": "00000036",
             "medianValue": "00000020"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0002",
             "date": "202104131017",
@@ -118,7 +118,7 @@
             "meanValue": "00000031",
             "medianValue": "00000023"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0002",
             "date": "202104131020",
@@ -139,7 +139,7 @@
             "meanValue": "00000041",
             "medianValue": "00000021"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0003",
             "date": "202104131023",
@@ -160,7 +160,7 @@
             "meanValue": "00000027",
             "medianValue": "00000022"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0001",
             "date": "202104131026",
@@ -181,7 +181,7 @@
             "meanValue": "00000045",
             "medianValue": "00000022"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0002",
             "date": "202104131029",
@@ -202,7 +202,7 @@
             "meanValue": "00000022",
             "medianValue": "00000021"
         },
-        "_alerteConfig": {
+        "_alertBody": {
             "version": "00.01.00",
             "idAlerte": "0003",
             "date": "202104131032",

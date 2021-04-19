@@ -52,11 +52,11 @@ def generate_measureBody(one_measure:dict)->str:
 
 
 def generate_alertBody(one_measure: dict) -> str:
-    _alerteConfig = one_measure["_alerteConfig"]
-    version = _alerteConfig["version"]
-    idAlerte = _alerteConfig["idAlerte"]
-    date = _alerteConfig["date"]
-    valueAlerte = _alerteConfig["valueAlerte"]
+    _alertBody = one_measure["_alertBody"]
+    version = _alertBody["version"]
+    idAlerte = _alertBody["idAlerte"]
+    date = _alertBody["date"]
+    valueAlerte = _alertBody["valueAlerte"]
     
     _alerteConfig_hex = "0x" + stringToHex(f"{version}{idAlerte}{date}{valueAlerte}")
     assert len(_alerteConfig_hex) == 66

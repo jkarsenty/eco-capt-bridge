@@ -3,17 +3,35 @@ import os
 import json
 sys.path.append('./App')
 import time 
+import datetime as dt
 from flask import Flask,render_template
 from flask import jsonify, request, url_for, redirect
+from flask_sqlalchemy import SQLAlchemy
+from scripts.utils import detect_strptime
 
 from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
 from scripts.get_rpi_capteurs import generate_alertBody,generate_measureBody,generate_measureHeader
-from scripts.request_functions import addMeasurePost, addAlertPost
 
 from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct, setTechMasterAddress
+from scripts.show_data_req_funct import addMeasurePost, addAlertPost
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
+# Initialize Database
+db = SQLAlchemy(app)
 
+# Create Database Model
+class SensorsData(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    temperature = db.Column(db.Float, nullable=False)
+    humidity = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=dt.datetime.utcnow)
+        
+    # Create fonction to return a string when we add something
+    def __repr__(self):
+        return "<Name %r>" % self.id
+
+# Verify Env Variable exists
 try :
     app.config["INFURA_ID"] = os.getenv("INFURA_ID")
     app.config["SEED"] = os.getenv("SEED")
@@ -38,7 +56,6 @@ except :
 def index():
     title = "Eco-Capt-Bridge - Home"
     return render_template("index.html",title=title)
-
 
 @app.route('/ownerPage', methods=['GET', 'POST'])
 def ownerPage():
@@ -68,7 +85,6 @@ def ownerPage():
         return render_template("ownerPage.html", title=title)
     else:
         return render_template("ownerPage.html", title=title)
-
 
 @app.route('/techMasterPage', methods=['GET', 'POST'])
 def techMasterPage():
@@ -128,6 +144,7 @@ def addMeasure():
     contract = generateContract(web3, contract_address, abi_str)
     
     while n < 10:
+    while n < 20:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
@@ -135,7 +152,7 @@ def addMeasure():
             one_measure = choose_one_measure(measure_config)
             _measureHeader = generate_measureHeader(one_measure)
             _measureBody = generate_measureBody(one_measure)
-            _serviceId = 2
+            _serviceId = 3
         else :
             _serviceId = data["_serviceId"]
             _measureHeader = data["_measureHeader"]
@@ -163,7 +180,6 @@ def addMeasure():
 
 @app.route('/addAlert',methods=['GET','POST'])
 def addAlert():
-    n=0
     infura_id = app.config["INFURA_ID"]
     seed = app.config["SEED"]
     contract_address = app.config["CONTRACT_ADRESS"]
@@ -201,6 +217,35 @@ def addAlert():
             time.sleep(30)
 
         n += 1
+    app.logger.info("Sending Alert...")
+    data = request.get_json()
+    if data == None:
+        measure_config = load_measure_config_example()
+        one_measure = choose_one_measure(measure_config)
+        _alertBody = generate_alertBody(one_measure)
+        _alertConfigId = 0
+        _serviceId = 0
+    else :
+        _serviceId = data["_serviceId"]
+        _alertConfigId = data["_alertConfigId"]
+        _alertBody = data["_alertBody"]
+
+    tx_hash = addAlertFunct(
+        web3=web3,
+        contract=contract,
+        bridgeAddress=bridgeAddress,
+        private_key=private_key,
+        _serviceId=_serviceId,
+        _alertConfigId = _alertConfigId,
+        _alertBody=_alertBody
+    )
+
+    app.logger.info("Alert Sent to the Blockchain")
+    time.sleep(20)
+    try:
+        web3.eth.waitForTransactionReceipt(tx_hash)
+    except:
+        time.sleep(30)
 
     return redirect(url_for("capteurs_v2"))
 
@@ -219,7 +264,6 @@ def printMeasure():
 
     return jsonify(data)
 
-
 @app.route('/printAlert',methods=['GET','POST'])
 def printAlert():
     app.logger.info("Show Alert")
@@ -229,24 +273,55 @@ def printAlert():
         one_measure = choose_one_measure(measure_config)
         _alertBody = generate_alertBody(one_measure)
 
-        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alertBody=_alertBody)
+        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alertConfigId = 0,_alertBody=_alertBody)
         data = resp.json()
 
     return jsonify(data)
 
 
-@app.route('/sensors', methods=['POST'])
+@app.route('/sensors', methods=['GET','POST'])
 def sensors():
-    data = request.get_json()
-    # process_data_sensors(data)
-    
-    # if _alertBody != None:
-    #     _alertBody = generate_alertBody()
-    
-    # elif _sendMeasures != None:
-    #     _measureHeader = generate_measureHeader()
-    #     _measureBody = generate_measureBody()
+    title = title = "Eco-Capt-Bridge - Sensors Data"
+    if request.method == "POST":
+        data = request.get_json()
+        if data == None:
+            data = request.form
+        humidity = data["humidity"]
+        assert humidity != None
+        temperature = data["temperature"]
+        assert temperature != None
+        timestamp= data["timestamp"]
+        assert timestamp != None
+        try:
+            timestamp = detect_strptime(timestamp)
+        except:
+            return "THE DATE FORMAT IS NOT GOOD"          
+        
+        # Add to Database
+        news_sensors_data = SensorsData(temperature=temperature,humidity=humidity,timestamp=timestamp)
+        try :
+            db.session.add(news_sensors_data)
+            db.session.commit()
+        except:
+            return "<h1> ERROR WITH THE ADDING TO DATABASE <h1/>"
 
-    # SEND TO SMART CONTRACT
+        return redirect(url_for("sensors")) # jsonify(data)
+    else: 
+        sensors_data = SensorsData.query.all()
+        return render_template("sensors.html",title=title,sensors_data=sensors_data)
 
-    return jsonify(data)
+@app.route("/clearSensorsDb", methods=["GET","POST"])
+def clearSensorsDb():
+    title = title = "Eco-Capt-Bridge - Clear Database"
+    if request.method == "POST":
+        
+        try:
+            num_rows_deleted = db.session.query(SensorsData).delete()
+            app.logger.info(num_rows_deleted)
+            db.session.commit()
+        except:
+            db.session.rollback()
+
+        return render_template("clearSensorsDb.html",title=title)
+    else: 
+        return render_template("clearSensorsDb.html",title=title)
