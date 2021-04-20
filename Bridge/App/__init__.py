@@ -10,7 +10,7 @@ from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_mea
 from scripts.get_rpi_capteurs import generate_alertBody,generate_measureBody,generate_measureHeader
 from scripts.request_functions import addMeasurePost, addAlertPost
 
-from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct, setTechMasterAddress
+from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct, setTechMasterAddressFunct, setBridgeAddressFunct
 
 app = Flask(__name__)
 
@@ -57,7 +57,7 @@ def ownerPage():
             _serviceId = int(request.form["serviceId"])
             _techMasterAddress = request.form["techMasterAdress"]
 
-            setTechMasterAddress(
+            setTechMasterAddressFunct(
                 web3=web3,
                 contract=contract,
                 addressFrom=bridgeAddress,
@@ -87,7 +87,7 @@ def techMasterPage():
             _serviceId = int(request.form["serviceId"])
             _techMasterAddress = request.form["bridgeAddress"]
 
-            setTechMasterAddress(
+            setBridgeAddressFunct(
                 web3=web3,
                 contract=contract,
                 addressFrom=bridgeAddress,

@@ -2,7 +2,7 @@ import json
 from typing import List
 import random
 import datetime as dt
-
+from scripts.utils import stringToHex, hexToString
 
 def load_measure_config_example(path_measure_config="App/scripts/get_rpi_capteurs/measures_config.json"):
     with open(path_measure_config,"r") as f:

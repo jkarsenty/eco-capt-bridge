@@ -7,13 +7,17 @@ import datetime as dt
 from flask import Flask,render_template
 from flask import jsonify, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
+
 from scripts.utils import detect_strptime
 
-from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
-from scripts.get_rpi_capteurs import generate_alertBody,generate_measureBody,generate_measureHeader
-
-from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract, addAlertFunct, addMeasureFunct, setTechMasterAddress
 from scripts.show_data_req_funct import addMeasurePost, addAlertPost
+
+from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
+from scripts.get_rpi_capteurs import generate_alertBody, generate_measureBody, generate_measureHeader
+
+from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract
+from scripts.tx_functions import addAlertFunct, addMeasureFunct, setTechMasterAddressFunct, setBridgeAddressFunct
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
@@ -74,7 +78,7 @@ def ownerPage():
             _serviceId = int(request.form["serviceId"])
             _techMasterAddress = request.form["techMasterAdress"]
 
-            setTechMasterAddress(
+            setTechMasterAddressFunct(
                 web3=web3,
                 contract=contract,
                 addressFrom=bridgeAddress,
@@ -103,7 +107,7 @@ def techMasterPage():
             _serviceId = int(request.form["serviceId"])
             _techMasterAddress = request.form["bridgeAddress"]
 
-            setTechMasterAddress(
+            setBridgeAddressFunct(
                 web3=web3,
                 contract=contract,
                 addressFrom=bridgeAddress,

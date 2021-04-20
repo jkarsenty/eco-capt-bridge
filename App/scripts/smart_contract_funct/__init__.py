@@ -148,18 +148,23 @@ def generate_tx_data(web3, addressFrom: str):
 def make_signed_transaction(web3: Web3, tx_data: dict, private_key: str):
     return web3.eth.account.signTransaction(tx_data, private_key)
 
+############# CONTRACT FUNCTIONS #############
 
-def setBridgeAddress(web3, contract, addressFrom: str, private_key:str, _serviceId: int, bridgeAddress: str):
-    tx_data = generate_tx_data(web3, addressFrom=addressFrom)
-    tx_data_built = contract.functions.setBridgeAddress(_serviceId,
-                                                        bridgeAddress).buildTransaction(tx_data)
-    signed_tx = make_signed_transaction(
-        web3, tx_data_built, private_key=private_key)
-    tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    return tx_hash
+## SERVICE PART
 
 
-def setTechMasterAddress(web3, contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
+def getOneServiceFunct(contract,_serviceId):
+    """get a specific Service"""
+    return contract.functions.getOneService(_serviceId).call()
+     
+
+def getAllServicesFunct(contract):
+    """get all Services"""
+    return contract.functions.getAllServices().call()
+
+
+def setTechMasterAddressFunct(web3, contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
+    """set a TechMasterAddress"""
     tx_data = generate_tx_data(web3, addressFrom=addressFrom)
     tx_data_built = contract.functions.setTechMasterAddress(_serviceId,
                                                             _techMasterAddress).buildTransaction(tx_data)
@@ -168,8 +173,61 @@ def setTechMasterAddress(web3, contract, addressFrom: str, private_key: str, _se
     tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     return tx_hash
 
+def setBridgeAddressFunct(web3, contract, addressFrom: str, private_key:str, _serviceId: int, bridgeAddress: str):
+    """set a BridgeAdress"""
+    tx_data = generate_tx_data(web3, addressFrom=addressFrom)
+    tx_data_built = contract.functions.setBridgeAddress(_serviceId,
+                                                        bridgeAddress).buildTransaction(tx_data)
+    signed_tx = make_signed_transaction(
+        web3, tx_data_built, private_key=private_key)
+    tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    return tx_hash
 
-def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _alertConfigId:int, _alertBody: str):
+## MEASURE PART
+
+def addMeasureFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _measureHeader: str, _measurebody: str):
+    """add a Measure"""
+    tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
+    tx_data_built = contract.functions.addMeasure(
+        _serviceId=_serviceId,
+        _measureHeader=_measureHeader,
+        _measurebody=_measurebody).buildTransaction(tx_data)
+
+    signed_tx = make_signed_transaction(
+        web3, tx_data_built, private_key=private_key)
+    tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+    return tx_hash
+
+def getAllMeasuresFunct(contract, _serviceId:int):
+    """get all Measures"""
+    allMeasures = contract.functions.getAllMeasures(_serviceId).call()
+    _serviceHeaderMeasures = allMeasures[0]
+    _serviceBodyMeasures = allMeasures[1]
+    return (_serviceBodyMeasures,_serviceBodyMeasures)
+
+
+def getMeasuresByIdFunct(contract, _serviceId: int, _measureId:int):
+    """get a specific measure by id"""
+    allMeasures = contract.functions.getMeasuresById(
+        _serviceId, _measureId).call()
+    _serviceHeaderMeasures = allMeasures[0]
+    _serviceBodyMeasures = allMeasures[1]
+    return (_serviceBodyMeasures, _serviceBodyMeasures)
+
+## ALERT CONFIG PART
+
+
+def getAllAlertConfigsFunct(contract) -> list:
+    """get all alert configs"""
+    _serviceAlertConfig = contract.functions.getAllAlertConfigs().call()
+    #print(len(_serviceAlertConfig))
+    #_valueAlert = _serviceAlertConfig[-1][-1]
+    return _serviceAlertConfig
+
+## ALERTS PART
+
+def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _alertConfigId: int, _alertBody: str):
+    """add an alert"""
     tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
     tx_data_built = contract.functions.addAlert(
         _serviceId=_serviceId,
@@ -182,22 +240,11 @@ def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _service
     return tx_hash
 
 
-def addMeasureFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _measureHeader: str, _measurebody: str):
-    tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
-    tx_data_built = contract.functions.addMeasure(
-        _serviceId=_serviceId,
-        _measureHeader=_measureHeader,
-        _measurebody=_measurebody).buildTransaction(tx_data)
 
-    signed_tx = make_signed_transaction(
-        web3, tx_data_built, private_key=private_key)
-    tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
-    return tx_hash
+def getAlertsFunct(contract,_serviceId:int)->list:
+    """get all alerts of a specific alerteConfig"""
+    _alertConfigId = contract.functions.getAlerts(_serviceId)
+    return _alertConfigId
 
-def get_valueAlert(contract):
-    _serviceAlertConfig = contract.functions.getAllAlertConfigs().call()
-    print(len(_serviceAlertConfig))
-    _valueAlert = _serviceAlertConfig[-1][-1]
-    return _valueAlert
-# _valueAlert = get_valueAlert(contract)
-# print(_valueAlert)
+
+

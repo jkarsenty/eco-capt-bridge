@@ -149,7 +149,7 @@ def make_signed_transaction(web3: Web3, tx_data: dict, private_key: str):
     return web3.eth.account.signTransaction(tx_data, private_key)
 
 
-def setBridgeAddress(web3, contract, addressFrom: str, private_key:str, _serviceId: int, bridgeAddress: str):
+def setBridgeAddressFunct(web3, contract, addressFrom: str, private_key:str, _serviceId: int, bridgeAddress: str):
     tx_data = generate_tx_data(web3, addressFrom=addressFrom)
     tx_data_built = contract.functions.setBridgeAddress(_serviceId,
                                                         bridgeAddress).buildTransaction(tx_data)
@@ -159,7 +159,7 @@ def setBridgeAddress(web3, contract, addressFrom: str, private_key:str, _service
     return tx_hash
 
 
-def setTechMasterAddress(web3, contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
+def setTechMasterAddressFunct(web3, contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
     tx_data = generate_tx_data(web3, addressFrom=addressFrom)
     tx_data_built = contract.functions.setTechMasterAddress(_serviceId,
                                                             _techMasterAddress).buildTransaction(tx_data)
