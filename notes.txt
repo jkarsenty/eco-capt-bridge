@@ -120,3 +120,103 @@ noir (yellow): +
 blanc (red) : ground
 marron (orange) : gpio4
 noir (yellow) : 3.3
+
+import sys
+sys.path.append('./App')
+from scripts.smart_contract_funct import INFURA_ID, ABI,connectWeb3, generateContract
+from scripts.utils import hexToString, stringToHex
+from pprint import pprint
+
+if __name__ == "__main__":
+    web3 = connectWeb3(INFURA_ID)
+    # print(web3)
+    # contract_address = "0x77D1aE180104A257a6B208Bc04bAae41C0F26bE8"
+    contract_address = "0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
+    abi_str = ABI
+    contract = generateContract(
+        web3=web3, contract_address=contract_address, abi_str=abi_str)
+    # pprint(contract.all_functions())
+    # print('\n')
+
+    # from web3.contract import ContractEvent
+    # filters = [
+    # event.createFilter(fromBlock='latest')
+    # for event in contract.events
+    # # if isinstance(event, ContractEvent)
+    # ]
+    # print(filters)
+
+    # print(contract.functions.getAllAlertConfigs(0).call())
+    
+    ## HEX TO STRING & STRING TO HEX ##
+    # print(hexToString("0x30302e30312e3030"))
+    print(stringToHex("00000001"))
+
+    from web3.contract import Contract
+    from web3._utils.events import get_event_data
+    from eth_utils import event_abi_to_log_topic
+
+    def fetch_events(web3,contract: Contract, fromBlock, toBlock=None):
+        topic2abi = {event_abi_to_log_topic(_): _
+                        for _ in contract.abi if _['type'] == 'event'}
+
+        logs = web3.eth.getLogs(dict(
+            address=contract.address,
+            fromBlock=fromBlock,
+            toBlock=toBlock
+        ))
+
+        for entry in logs:
+            topic0 = entry['topics'][0]
+            if topic0 in topic2abi:
+                yield get_event_data(web3.codec, topic2abi[topic0], entry)
+
+    def getAllEventByName(web3, contract, contractEventName, fromBlock=0, toBlock='latest'):
+        event_generator = fetch_events(web3,contract,fromBlock,toBlock)
+        list_all_event = []
+        while True:
+            try:
+                event = next(event_generator)
+                if event['event'] == contractEventName:
+                    list_all_event.append(event)
+            except:
+                break
+        return list_all_event
+
+    # def getNumService(allServiceUpdateEvent):
+    #     return len([event for event in allServiceUpdateEvent if event['args']['_message'] == 'New service'])
+
+    def getServiceCounter(contract):
+        """get num of services"""
+        return contract.functions._serviceIdCounter().call()
+    
+    allContractUpdateEvent = getAllEventByName(
+        web3, contract, contractEventName='ContractUpdate', fromBlock=0, toBlock='latest')
+
+    allServiceUpdateEvent = getAllEventByName(
+        web3, contract, contractEventName="ServiceUpdate",fromBlock=0, toBlock='latest')
+
+    allServiceRulesUpdateEvent = getAllEventByName(
+        web3, contract, contractEventName="ServiceRulesUpdate",fromBlock=0, toBlock='latest')
+
+    allMeasureReceiveEvent = getAllEventByName(
+        web3, contract, contractEventName="MeasureReceive",fromBlock=0, toBlock='latest')
+
+    allAlertReceiveEvent = getAllEventByName(
+        web3, contract, contractEventName="AlertReceive",fromBlock=0, toBlock='latest')
+
+    allServiceIotUpdateEvent = getAllEventByName(
+        web3, contract, contractEventName='ServiceIotUpdate', fromBlock=0, toBlock='latest')
+    
+    # print(getNumService(allServiceUpdateEvent))
+    # print(type(getServiceCounter(contract)))
+
+    # print(allServiceUpdateEvent)
+
+    
+
+CONTRACT_ADRESS_OLD = "0x77D1aE180104A257a6B208Bc04bAae41C0F26bE8"
+ABI='[{"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "uint256", "name": "_ruleId", "type": "uint256"}, {"internalType": "bytes32", "name": "_alertBody", "type": "bytes32"}], "name": "addAlert", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes6", "name": "_macAddress", "type": "bytes6"}, {"internalType": "string", "name": "_description", "type": "string"}], "name": "addIot", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes32", "name": "_measureHeader", "type": "bytes32"}, {"internalType": "bytes32", "name": "_measurebody", "type": "bytes32"}], "name": "addMeasure", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "uint16", "name": "_serviceId", "type": "uint16"}, {"internalType": "string", "name": "_description", "type": "string"}, {"internalType": "uint64", "name": "_dateOn", "type": "uint64"}, {"internalType": "uint64", "name": "_dateOff", "type": "uint64"}, {"internalType": "bytes8", "name": "_codeAlert", "type": "bytes8"}, {"internalType": "bytes8", "name": "_valueAlert", "type": "bytes8"}], "name": "addRule", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "string", "name": "_description", "type": "string"}, {"internalType": "bytes8", "name": "_measureType", "type": "bytes8"}, {"internalType": "bytes1", "name": "_timeCode", "type": "bytes1"}, {"internalType": "uint8", "name": "_nbTime", "type": "uint8"}], "name": "addService", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "bytes8", "name": "_version", "type": "bytes8"}, {"internalType": "address", "name": "_ledgerAddress", "type": "address"}, {"internalType": "address", "name": "_customerAddress", "type": "address"}, {"internalType": "address", "name": "_prevContract", "type": "address"}, {"internalType": "uint64", "name": "_prevContractDate", "type": "uint64"}], "stateMutability": "nonpayable", "type": "constructor"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"indexed": false, "internalType": "uint256", "name": "_ruleId", "type": "uint256"}, {"indexed": false, "internalType": "bytes32", "name": "_alert", "type": "bytes32"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "AlertReceive", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "string", "name": "_message", "type": "string"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "ContractUpdate", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"indexed": false, "internalType": "bytes32", "name": "_header", "type": "bytes32"}, {"indexed": false, "internalType": "bytes32", "name": "_body", "type": "bytes32"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "MeasureReceive", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": true, "internalType": "address", "name": "previousOwner", "type": "address"}, {"indexed": true, "internalType": "address", "name": "newOwner", "type": "address"}], "name": "OwnershipTransferred", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"indexed": false, "internalType": "bytes6", "name": "_iotId", "type": "bytes6"}, {"indexed": false, "internalType": "string", "name": "_message", "type": "string"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "ServiceIotUpdate", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"indexed": false, "internalType": "uint256", "name": "_ruleId", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "_message", "type": "string"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "ServiceRulesUpdate", "type": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"indexed": false, "internalType": "string", "name": "_message", "type": "string"}, {"indexed": false, "internalType": "address", "name": "_author", "type": "address"}], "name": "ServiceUpdate", "type": "event"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "address", "name": "_bridgeAddress", "type": "address"}], "name": "setBridgeAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "address", "name": "_legislatorAddress", "type": "address"}], "name": "setLegislatorAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "address", "name": "_techMasterAddress", "type": "address"}], "name": "setTechMasterAddress", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "toggleContract", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}, {"internalType": "bytes6", "name": "_macAddress", "type": "bytes6"}], "name": "toggleIOT", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_ruleId", "type": "uint256"}], "name": "toggleRule", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "_serviceId", "type": "uint256"}], "name": "toggleService", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "address", "name": "newOwner", "type": "address"}], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "_myConfig", "outputs": [{"internalType": "bytes8", "name": "version", "type": "bytes8"}, {"internalType": "address", "name": "_ledgerAddress", "type": "address"}, {"internalType": "uint64", "name": "prevContractDate", "type": "uint64"}, {"internalType": "uint64", "name": "nextContractDate", "type": "uint64"}, {"internalType": "address", "name": "customerAddress", "type": "address"}, {"internalType": "address", "name": "prevContract", "type": "address"}, {"internalType": "address", "name": "nextContract", "type": "address"}, {"internalType": "bool", "name": "isActive", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "_ruleIdCounter", "outputs": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "_serviceIdCounter", "outputs": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}, {"internalType": "bytes6", "name": "", "type": "bytes6"}], "name": "_serviceIots", "outputs": [{"internalType": "string", "name": "description", "type": "string"}, {"internalType": "bool", "name": "isActive", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "_serviceRules", "outputs": [{"internalType": "bytes8", "name": "version", "type": "bytes8"}, {"internalType": "uint16", "name": "serviceId", "type": "uint16"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "legislatorAddress", "type": "address"}, {"internalType": "uint64", "name": "dateOn", "type": "uint64"}, {"internalType": "uint64", "name": "dateOff", "type": "uint64"}, {"internalType": "bytes8", "name": "codeAlert", "type": "bytes8"}, {"internalType": "bytes8", "name": "valueAlert", "type": "bytes8"}, {"internalType": "bool", "name": "isActive", "type": "bool"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "alertIdCounter", "type": "tuple"}], "stateMutability": "view", "type": "function"}, {"inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "name": "_services", "outputs": [{"internalType": "bytes8", "name": "version", "type": "bytes8"}, {"internalType": "bytes8", "name": "measureType", "type": "bytes8"}, {"internalType": "bytes1", "name": "timeCode", "type": "bytes1"}, {"internalType": "uint8", "name": "nbTime", "type": "uint8"}, {"internalType": "bool", "name": "isActive", "type": "bool"}, {"internalType": "string", "name": "description", "type": "string"}, {"internalType": "address", "name": "bridgeAddress", "type": "address"}, {"internalType": "address", "name": "techMasterAddress", "type": "address"}, {"internalType": "address", "name": "legislatorAddress", "type": "address"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "measureIdCounter", "type": "tuple"}, {"components": [{"internalType": "uint256", "name": "_value", "type": "uint256"}], "internalType": "struct Counters.Counter", "name": "IotIdCounter", "type": "tuple"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "owner", "outputs": [{"internalType": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}]'
+owner = "0x9F52Fd356973FAA3ECe41e99F37bf4F3bAEBd096"
+tech_master = "0x9F52Fd356973FAA3ECe41e99F37bf4F3bAEBd096"
+CONTRACT_ADRESS ="0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
