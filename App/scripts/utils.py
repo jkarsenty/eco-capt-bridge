@@ -17,7 +17,7 @@ def stringToHex(stringValue):
     hexValue = ""
     for l in stringValue:
         hexValue += hex(ord(l))[2:]
-    return hexValue
+    return '0x' + hexValue
 
 def hexToString(hexValue):
     if hexValue[:2] == "0x":

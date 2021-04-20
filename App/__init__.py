@@ -61,6 +61,7 @@ def index():
     title = "Eco-Capt-Bridge - Home"
     return render_template("index.html",title=title)
 
+## OWNER & TECHMASTER PART ##
 @app.route('/ownerPage', methods=['GET', 'POST'])
 def ownerPage():
     title = "Eco-Capt-Bridge - Owner Page"
@@ -136,6 +137,7 @@ def capteurs_v2():
     else :
         return render_template("capteurs_v2.html", title=title)
 
+## ADD PART MANUALLY ##
 @app.route('/addMeasure',methods=['GET','POST'])
 def addMeasure():
     n=0
@@ -197,11 +199,11 @@ def addAlert():
         measure_config = load_measure_config_example()
         one_measure = choose_one_measure(measure_config)
         _alertBody = generate_alertBody(one_measure)
-        _alertConfigId = 0
+        _ruleId = 0
         _serviceId = 0
     else :
         _serviceId = data["_serviceId"]
-        _alertConfigId = data["_alertConfigId"]
+        _ruleId = data["_ruleId"]
         _alertBody = data["_alertBody"]
 
     tx_hash = addAlertFunct(
@@ -210,7 +212,7 @@ def addAlert():
         bridgeAddress=bridgeAddress,
         private_key=private_key,
         _serviceId=_serviceId,
-        _alertConfigId = _alertConfigId,
+        _ruleId = _ruleId,
         _alertBody=_alertBody
     )
 
@@ -223,6 +225,7 @@ def addAlert():
 
     return redirect(url_for("capteurs_v2"))
 
+## SHOW EXAMPLES PART ##
 @app.route('/printMeasure',methods=['GET','POST'])
 def printMeasure():
     app.logger.info("Show Measure")
@@ -247,12 +250,12 @@ def printAlert():
         one_measure = choose_one_measure(measure_config)
         _alertBody = generate_alertBody(one_measure)
 
-        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_alertConfigId = 0,_alertBody=_alertBody)
+        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_ruleId = 0,_alertBody=_alertBody)
         data = resp.json()
 
     return jsonify(data)
 
-
+## SENSORS BRIDGE PART ##
 @app.route('/sensors', methods=['GET','POST'])
 def sensors():
     title = title = "Eco-Capt-Bridge - Sensors Data"

@@ -18,6 +18,7 @@ load_dotenv('.env')
 INFURA_ID = os.getenv("INFURA_ID")
 MNEMONIC = os.getenv("MNEMONIC")
 SEED = os.getenv("SEED")
+ABI = os.getenv("ABI")
 
 ############# HD WALLET #############
 
@@ -153,15 +154,23 @@ def make_signed_transaction(web3: Web3, tx_data: dict, private_key: str):
 ## SERVICE PART
 
 
-def getOneServiceFunct(contract,_serviceId):
+def getServiceCounter(contract):
+    """get num of services"""
+    return contract.functions._serviceIdCounter().call()
+
+def getServiceById(contract,_serviceId):
     """get a specific Service"""
-    return contract.functions.getOneService(_serviceId).call()
+    return contract.functions._services(_serviceId).call()
      
 
 def getAllServicesFunct(contract):
     """get all Services"""
-    return contract.functions.getAllServices().call()
-
+    _serviceIdCounter = getServiceCounter(contract)
+    allServices = []
+    for i in range(_serviceIdCounter):
+        oneService = getServiceById(contract, i)
+        allServices.append(oneService)
+    return allServices
 
 def setTechMasterAddressFunct(web3, contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
     """set a TechMasterAddress"""
@@ -198,41 +207,34 @@ def addMeasureFunct(web3, contract, bridgeAddress: str, private_key: str, _servi
     tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     return tx_hash
 
-def getAllMeasuresFunct(contract, _serviceId:int):
-    """get all Measures"""
-    allMeasures = contract.functions.getAllMeasures(_serviceId).call()
-    _serviceHeaderMeasures = allMeasures[0]
-    _serviceBodyMeasures = allMeasures[1]
-    return (_serviceBodyMeasures,_serviceBodyMeasures)
 
+## RULE (ALERT CONFIG) PART
+def getRuleIdCounter(contract):
+    """get num of rules"""
+    return contract.functions._ruleIdCounter().call()
 
-def getMeasuresByIdFunct(contract, _serviceId: int, _measureId:int):
-    """get a specific measure by id"""
-    allMeasures = contract.functions.getMeasuresById(
-        _serviceId, _measureId).call()
-    _serviceHeaderMeasures = allMeasures[0]
-    _serviceBodyMeasures = allMeasures[1]
-    return (_serviceBodyMeasures, _serviceBodyMeasures)
+def getServicesRuleById(contract, _serviceId: int):
+    """get Rule of a specific Service"""
+    return contract.functions._serviceRules(_serviceId).call()
 
-## ALERT CONFIG PART
-
-
-def getAllAlertConfigsFunct(contract) -> list:
-    """get all alert configs"""
-    _serviceAlertConfig = contract.functions.getAllAlertConfigs().call()
-    #print(len(_serviceAlertConfig))
-    #_valueAlert = _serviceAlertConfig[-1][-1]
-    return _serviceAlertConfig
+def getAllServiceRulesFunct(contract,_servicesId:int):
+    """get all Services Rule"""
+    _ruleIdCounter = getRuleIdCounter(contract)
+    allServicesRule = []
+    for i in range(_ruleIdCounter):
+        oneServiceRule = getServicesRuleById(contract, i)
+        allServicesRule.append(oneServiceRule)
+    return allServicesRule
 
 ## ALERTS PART
 
-def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _alertConfigId: int, _alertBody: str):
+def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _ruleId: int, _alertBody: str):
     """add an alert"""
     tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
     tx_data_built = contract.functions.addAlert(
-        _serviceId=_serviceId,
-        _alertConfigId=_alertConfigId,
-        _alertBody=_alertBody).buildTransaction(tx_data)
+        _serviceId =_serviceId,
+        _ruleId =_ruleId,
+        _alertBody = _alertBody).buildTransaction(tx_data)
 
     signed_tx = make_signed_transaction(
         web3, tx_data_built, private_key=private_key)
@@ -240,11 +242,55 @@ def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _service
     return tx_hash
 
 
-
 def getAlertsFunct(contract,_serviceId:int)->list:
     """get all alerts of a specific alerteConfig"""
-    _alertConfigId = contract.functions.getAlerts(_serviceId)
-    return _alertConfigId
+    _ruleId = contract.functions.getAlerts(_serviceId)
+    return _ruleId
 
 
+## FREQUENCY AND THRESHOLD PART
 
+def getFrequencyServiceById(contract,_serviceId:int):
+    oneService = getServiceById(contract,_serviceId)
+    timeCode = oneService[2].decode('ascii')
+    assert timeCode in ['i','H','d','m','Y']
+    nbTime = oneService[3]
+    return f"{nbTime} {timeCode}"
+
+def getValueAlertServiceRuleById(contract,_servicesId:int):
+    oneServiceRule = getServiceRuleById(contract, _serviceId)
+    valueAlert = oneServiceRule[7].decode('ascii')
+    assert valueAlert.isnumeric()
+    return int(valueAlert)
+
+# <Function addAlert(uint256,uint256,bytes32)>,
+# <Function addIot(uint256,bytes6,string)>,
+# <Function addMeasure(uint256,bytes32,bytes32)>,
+# <Function addRule(bytes8,uint16,string,uint64,uint64,bytes8,bytes8)>,
+# <Function addService(bytes8,string,bytes8,bytes1,uint8)>,
+# <Function renounceOwnership()>,
+# <Function setBridgeAddress(uint256,address)>,
+# <Function setLegislatorAddress(uint256,address)>,
+# <Function setTechMasterAddress(uint256,address)>,
+# <Function toggleContract()>,
+# <Function toggleIOT(uint256,bytes6)>,
+# <Function toggleRule(uint256)>,
+# <Function toggleService(uint256)>,
+# <Function transferOwnership(address)>,
+# <Function _myConfig()>,
+# <Function _ruleIdCounter()>,
+# <Function _serviceIdCounter()>,
+# <Function _serviceIots(uint256,bytes6)>,
+# <Function _serviceRules(uint256)>,
+# <Function _services(uint256)>,
+# <Function owner()>]
+
+# event ContractUpdate(string _message, address _author);         
+# event ServiceUpdate(uint _serviceId, string _message, address _author);  
+# event ServiceRulesUpdate(uint _serviceId, uint _ruleId, string _message, address _author); 
+# event ServiceIotUpdate(uint _serviceId, bytes6 _iotId, string _message, address _author); 
+# event MeasureReceive(uint _serviceId, bytes32 _header, bytes32 _body, address _author); 
+# event AlertReceive(uint _serviceId, uint _ruleId, bytes32 _alert, address _author);     
+
+# event_keys(['args', 'event', 'logIndex', 'transactionIndex', 'transactionHash', 'address', 'blockHash', 'blockNumber'])
+# event['args]_keys(['_serviceId', '_message', '_author'])
