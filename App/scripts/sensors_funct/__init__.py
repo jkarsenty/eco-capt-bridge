@@ -14,16 +14,24 @@ def choose_one_measure(measure_config:List[dict]):
     return one_measure 
     
 def generate_one_measure(
-    temperature:int,
-    humidity:int,
-    timestamp:str,
+    maxValue:int,
+    minValue:int,
+    meanValue:int,
+    medianValue:str,
     version:str="00.01.00",
     measureType:str="SON_0001",
     timeCode:str="i",
     nbTime:str="001",
     idAlert:str="0002"
     ):
-    
+    while len(maxValue)!=8:
+        maxValue = "0"+maxValue
+    while len(minValue)!=8:
+        minValue = "0"+minValue
+    while len(meanValue)!=8:
+        meanValue = "0"+meanValue
+    while len(medianValue)!=8:
+        medianValue = "0"+medianValue
     one_measure = {
         "_measureHeader": {
             "version": version,
@@ -33,10 +41,10 @@ def generate_one_measure(
             "nbTime": nbTime
         },
         "_measureBody": {
-            "maxValue": "00000045",
-            "minValue": "00000009",
-            "meanValue": "00000026",
-            "medianValue": "00000018"
+            "maxValue": maxValue,
+            "minValue": minValue,
+            "meanValue": meanValue,
+            "medianValue": medianValue
         },
         "_alertBody": {
             "version": version,

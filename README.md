@@ -38,4 +38,4 @@ Terminal resp :
 - Doc pour Ledger et liste deroulante (jeu de data)
 - Doc type measure
 - show functions v0 to heroku
-- add functions to detect type measures and type alert for detection
+- add functions to detect measureType and code alert for detection

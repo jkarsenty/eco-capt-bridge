@@ -252,19 +252,24 @@ def getAlertsFunct(contract:Contract,_serviceId:int)->list:
 
 ## FREQUENCY AND VALUE ALERT PART
 
-def getFrequencyServiceById(contract:Contract,_serviceId:int):
+def getFrequencyServiceById(contract:Contract,_serviceId:int)->str:
     oneService = getServiceById(contract,_serviceId)
     timeCode = oneService[2].decode('ascii')
     assert timeCode in ['i','H','d','m','Y']
     nbTime = oneService[3]
     return f"{nbTime} {timeCode}"
 
-def getValueAlertServiceRuleById(contract:Contract,_servicesId:int):
+def getValueAlertServiceRuleById(contract:Contract,_servicesId:int)->int:
     oneServiceRule = getServiceRuleById(contract, _serviceId)
     valueAlert = oneServiceRule[7].decode('ascii')
     assert valueAlert.isnumeric()
     return int(valueAlert)
 
+def getCodeAlertServiceRuleById(contract:Contract,_servicesId:int):
+    oneServiceRule = getServiceRuleById(contract, _serviceId)
+    codeAlert = oneServiceRule[6].decode('ascii')
+    assert codeAlert.isnumeric()
+    return int(codeAlert)
 
 ############# EVENTS PART #############
 

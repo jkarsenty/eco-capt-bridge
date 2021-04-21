@@ -6,25 +6,29 @@ sys.path.append('./App')
 import datetime as dt
 import time
 
+import numpy as np
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+from web3.contract import Contract
 
 from scripts.sensors_funct import (choose_one_measure, generate_alertBody,
                                    generate_measureBody,
                                    generate_measureHeader,
-                                   load_measure_config_example)
+                                   load_measure_config_example,
+                                   generate_one_measure)
+
+from scripts.show_data_req_funct import addAlertPost_v0, addMeasurePost_v0
 
 from scripts.smart_contract_funct import (addAlertFunct, addMeasureFunct,
                                           connectWeb3, createBridgeWallet,
                                           generateContract,
-                                          getFrequencyServiceById, getValueAlertServiceRuleById,
+                                          getFrequencyServiceById,
+                                          getValueAlertServiceRuleById,
                                           setBridgeAddressFunct,
                                           setTechMasterAddressFunct)
 
-from scripts.utils import convertFrequencyToSec, detect_strptime,readSensorsDatabase
-from scripts.show_data_req_funct import addAlertPost_v0, addMeasurePost_v0
-
-from web3.contract import Contract
+from scripts.utils import (convertFrequencyToSec, detect_strptime,
+                           readSensorsDatabase,detectEachFrequency,statsSensorsData)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
@@ -63,9 +67,9 @@ except :
         assert False 
 
 app.config["_serviceId"] = 1
-app.config["frequency"] = None
+app.config["frequency"] = 60 # by default 1min = 60s
 app.config["valueAlert"] = None
-app.config["dateLastQuery"] = None
+app.config["dateLastQuery"] = "2021-04-01 10:10:00" 
 
 def get_frequency(current_frequency:int,contract:Contract,_serviceId:int):
     frequency = getFrequencyServiceById(contract,_serviceId)
@@ -73,7 +77,6 @@ def get_frequency(current_frequency:int,contract:Contract,_serviceId:int):
     if frequency != current_frequency:
         app.config["frequency"] = frequency
 
-    
 def get_value_alert(current_value_alert:int,contract:Contract, _serviceId:int):
     valueAlert = getValueAlertServiceRuleById(contract,_serviceId)
     if valueAlert != current_value_alert :
@@ -287,28 +290,38 @@ def printAlert():
 
     return jsonify(data)
 
+
+
 ## SENSORS BRIDGE PART ##
 @app.route('/sensors', methods=['GET','POST'])
 def sensors():
     title = title = "Eco-Capt-Bridge - Sensors Data"
+
+    infura_id = app.config["INFURA_ID"]
+    seed = app.config["SEED"]
+    contract_address = app.config["CONTRACT_ADRESS"]
+    abi_str = app.config["ABI"]
+    
     current_value_alert = app.config["valueAlert"]
+    dateLastQuery = app.config["dateLastQuery"]
+    date_to = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')    
+    frequency = app.config["frequency"]
 
     if request.method == "POST":
+
+        ## Save data in database  
         data = request.get_json()
         if data == None:
             data = request.form
         humidity = data["humidity"]
-        assert humidity != None
         temperature = data["temperature"]
-        assert temperature != None
         timestamp= data["timestamp"]
-        assert timestamp != None
+        assert humidity != None and temperature != None and timestamp != None
         try:
             timestamp = detect_strptime(timestamp)
         except:
             return "THE DATE FORMAT IS NOT GOOD"          
-        
-        # Add to Database
+
         news_sensors_data = SensorsDatabase(temperature=temperature,humidity=humidity,timestamp=timestamp)
         try :
             db.session.add(news_sensors_data)
@@ -317,13 +330,48 @@ def sensors():
             return "<h1> ERROR WITH THE ADDING TO DATABASE <h1/>"
 
         return redirect(url_for("sensors")) # jsonify(data)
+
+        ## detect if it's time to send measure
+        timeSendMeasure = detectEachFrequency(dateLastQuery,frequency)
+        if timeSendMeasure :
+            
+            web3 = connectWeb3(infura_id=infura_id)
+            bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+            contract = generateContract(web3, contract_address, abi_str)
+
+            sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
+            temperature_data = [d.temperature for d in sensors_data]
+            maxValue,minValue,meanValue,medianValue = statsSensorsData(temperature_data)
+            one_measure = generate_one_measure(maxValue,minValue,meanValue,medianValue)
+            _measureHeader = generate_measureHeader(one_measure)
+            _measureBody = generate_measureBody(one_measure)
+            _serviceId = app.config["_serviceId"]
+            
+            
+            tx_hash = addMeasureFunct(
+                web3=web3,
+                contract=contract,
+                bridgeAddress=bridgeAddress,
+                private_key=private_key,
+                _serviceId=_serviceId,
+                _measureHeader=_measureHeader,
+                _measurebody=_measureBody
+                )
+
+            app.logger.info("Data Sent to the Blockchain")
+            time.sleep(5)
+            try:
+                web3.eth.waitForTransactionReceipt(tx_hash)
+            except:
+                time.sleep(10)
+
+            app.config["dateLastQuery"] = date_to
+    
     else: 
         # GET
-        sensors_data = SensorsDatabase.query.all()
-        # date_from = app.config["dateLastQuery"]
-        # date_to = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        # sensors_data = readSensorsDatabase(SensorsDatabase,date_from,date_to)
-        # app.config["dateLastQuery"] = date_to
+        sensors_data = ""
+        # sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
+        # temperature_data = [d.temperature for d in sensors_data]
         return render_template("sensors.html",title=title,sensors_data=sensors_data)
 
 @app.route("/clearSensorsDb", methods=["GET","POST"])
@@ -341,5 +389,4 @@ def clearSensorsDb():
         return render_template("clearSensorsDb.html",title=title)
     else: 
         return render_template("clearSensorsDb.html",title=title)
-
 
