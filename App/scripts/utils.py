@@ -41,5 +41,7 @@ def convertFrequencyToSec(frequency:str):
         time_str = dt.datetime.strftime(nbTime,'%Y')
     return int(time_str.strftime('%S'))
 
-
-## for 
+## Interroger base de données par tranche de sequence
+def readSensorsDatabase(SensorsDatabase,date_from,date_to):
+    sensors_data = SensorsDatabase.query.filter(SensorsDatabase.birthday.between(date_from, date_to))
+    return sensors_data

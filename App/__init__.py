@@ -21,7 +21,7 @@ from scripts.smart_contract_funct import (addAlertFunct, addMeasureFunct,
                                           setBridgeAddressFunct,
                                           setTechMasterAddressFunct)
 
-from scripts.utils import convertFrequencyToSec, detect_strptime
+from scripts.utils import convertFrequencyToSec, detect_strptime,readSensorsDatabase
 from scripts.show_data_req_funct import addAlertPost_v0, addMeasurePost_v0
 
 from web3.contract import Contract
@@ -32,7 +32,7 @@ app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
 db = SQLAlchemy(app)
 
 # Create Database Model
-class SensorsData(db.Model):
+class SensorsDatabase(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     temperature = db.Column(db.Float, nullable=False)
     humidity = db.Column(db.Float, nullable=False)
@@ -65,6 +65,7 @@ except :
 app.config["_serviceId"] = 1
 app.config["frequency"] = None
 app.config["valueAlert"] = None
+app.config["dateLastQuery"] = None
 
 def get_frequency(current_frequency:int,contract:Contract,_serviceId:int):
     frequency = getFrequencyServiceById(contract,_serviceId)
@@ -308,7 +309,7 @@ def sensors():
             return "THE DATE FORMAT IS NOT GOOD"          
         
         # Add to Database
-        news_sensors_data = SensorsData(temperature=temperature,humidity=humidity,timestamp=timestamp)
+        news_sensors_data = SensorsDatabase(temperature=temperature,humidity=humidity,timestamp=timestamp)
         try :
             db.session.add(news_sensors_data)
             db.session.commit()
@@ -317,7 +318,12 @@ def sensors():
 
         return redirect(url_for("sensors")) # jsonify(data)
     else: 
-        sensors_data = SensorsData.query.all()
+        # GET
+        sensors_data = SensorsDatabase.query.all()
+        # date_from = app.config["dateLastQuery"]
+        # date_to = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # sensors_data = readSensorsDatabase(SensorsDatabase,date_from,date_to)
+        # app.config["dateLastQuery"] = date_to
         return render_template("sensors.html",title=title,sensors_data=sensors_data)
 
 @app.route("/clearSensorsDb", methods=["GET","POST"])
@@ -326,7 +332,7 @@ def clearSensorsDb():
     if request.method == "POST":
         
         try:
-            num_rows_deleted = db.session.query(SensorsData).delete()
+            num_rows_deleted = db.session.query(SensorsDatabase).delete()
             app.logger.info(num_rows_deleted)
             db.session.commit()
         except:
