@@ -15,6 +15,27 @@ heroku ps:scale web=1
 heroku open
 ```
 
-TO DO :
+Launch Flask App :  
+```sh
+export FLASK_ENV=development
+export FLASK_APP=App
+flask run
+```
+Terminal resp :
+```sh
+* Serving Flask app "App" (lazy loading)
+ * Environment: development
+ * Debug mode: on
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 328-810-260
+```
 
-create bouton pour envoyer nouvelle donnees
+
+# TO DO
+
+- Doc pour Ledger et liste deroulante (jeu de data)
+- Doc type measure
+- show functions v0 to heroku
+- add functions to detect type measures and type alert for detection

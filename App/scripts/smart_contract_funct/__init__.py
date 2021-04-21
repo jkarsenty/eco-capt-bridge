@@ -5,12 +5,14 @@ from pprint import pprint
 from typing import List, Optional
 
 from dotenv import load_dotenv
-
+from eth_utils import event_abi_to_log_topic
 from hdwallet import BIP44HDWallet
 from hdwallet.cryptocurrencies import EthereumMainnet
 from hdwallet.derivations import BIP44Derivation
 from hdwallet.utils import generate_mnemonic, is_mnemonic
 from web3 import Web3
+from web3._utils.events import get_event_data
+from web3.contract import Contract
 
 ############# Env Variables #############
 
@@ -140,8 +142,8 @@ def generate_tx_data(web3, addressFrom: str):
     nonce = web3.eth.getTransactionCount(addressFrom)
     tx_data = {
         'nonce': nonce,
-        'gas': 500000,
-        'gasPrice': web3.toWei(2, 'gwei'),
+        'gas': 600000,
+        'gasPrice': web3.toWei(3, 'gwei'),
     }
     return tx_data
 
@@ -154,16 +156,16 @@ def make_signed_transaction(web3: Web3, tx_data: dict, private_key: str):
 ## SERVICE PART
 
 
-def getServiceCounter(contract):
+def getServiceCounter(contract:Contract):
     """get num of services"""
     return contract.functions._serviceIdCounter().call()
 
-def getServiceById(contract,_serviceId):
+def getServiceById(contract:Contract,_serviceId):
     """get a specific Service"""
     return contract.functions._services(_serviceId).call()
      
 
-def getAllServicesFunct(contract):
+def getAllServicesFunct(contract:Contract):
     """get all Services"""
     _serviceIdCounter = getServiceCounter(contract)
     allServices = []
@@ -172,7 +174,7 @@ def getAllServicesFunct(contract):
         allServices.append(oneService)
     return allServices
 
-def setTechMasterAddressFunct(web3, contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
+def setTechMasterAddressFunct(web3, contract:Contract, addressFrom: str, private_key: str, _serviceId: int, _techMasterAddress: str):
     """set a TechMasterAddress"""
     tx_data = generate_tx_data(web3, addressFrom=addressFrom)
     tx_data_built = contract.functions.setTechMasterAddress(_serviceId,
@@ -182,7 +184,7 @@ def setTechMasterAddressFunct(web3, contract, addressFrom: str, private_key: str
     tx_hash = web3.eth.sendRawTransaction(signed_tx.rawTransaction)
     return tx_hash
 
-def setBridgeAddressFunct(web3, contract, addressFrom: str, private_key:str, _serviceId: int, bridgeAddress: str):
+def setBridgeAddressFunct(web3, contract:Contract, addressFrom: str, private_key:str, _serviceId: int, bridgeAddress: str):
     """set a BridgeAdress"""
     tx_data = generate_tx_data(web3, addressFrom=addressFrom)
     tx_data_built = contract.functions.setBridgeAddress(_serviceId,
@@ -194,7 +196,7 @@ def setBridgeAddressFunct(web3, contract, addressFrom: str, private_key:str, _se
 
 ## MEASURE PART
 
-def addMeasureFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _measureHeader: str, _measurebody: str):
+def addMeasureFunct(web3, contract:Contract, bridgeAddress: str, private_key: str, _serviceId: int, _measureHeader: str, _measurebody: str):
     """add a Measure"""
     tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
     tx_data_built = contract.functions.addMeasure(
@@ -209,15 +211,15 @@ def addMeasureFunct(web3, contract, bridgeAddress: str, private_key: str, _servi
 
 
 ## RULE (ALERT CONFIG) PART
-def getRuleIdCounter(contract):
+def getRuleIdCounter(contract:Contract):
     """get num of rules"""
     return contract.functions._ruleIdCounter().call()
 
-def getServicesRuleById(contract, _serviceId: int):
+def getServicesRuleById(contract:Contract, _serviceId: int):
     """get Rule of a specific Service"""
     return contract.functions._serviceRules(_serviceId).call()
 
-def getAllServiceRulesFunct(contract,_servicesId:int):
+def getAllServiceRulesFunct(contract:Contract,_servicesId:int):
     """get all Services Rule"""
     _ruleIdCounter = getRuleIdCounter(contract)
     allServicesRule = []
@@ -228,7 +230,7 @@ def getAllServiceRulesFunct(contract,_servicesId:int):
 
 ## ALERTS PART
 
-def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _serviceId: int, _ruleId: int, _alertBody: str):
+def addAlertFunct(web3, contract:Contract, bridgeAddress: str, private_key: str, _serviceId: int, _ruleId: int, _alertBody: str):
     """add an alert"""
     tx_data = generate_tx_data(web3, addressFrom=bridgeAddress)
     tx_data_built = contract.functions.addAlert(
@@ -242,55 +244,56 @@ def addAlertFunct(web3, contract, bridgeAddress: str, private_key: str, _service
     return tx_hash
 
 
-def getAlertsFunct(contract,_serviceId:int)->list:
+def getAlertsFunct(contract:Contract,_serviceId:int)->list:
     """get all alerts of a specific alerteConfig"""
     _ruleId = contract.functions.getAlerts(_serviceId)
     return _ruleId
 
 
-## FREQUENCY AND THRESHOLD PART
+## FREQUENCY AND VALUE ALERT PART
 
-def getFrequencyServiceById(contract,_serviceId:int):
+def getFrequencyServiceById(contract:Contract,_serviceId:int):
     oneService = getServiceById(contract,_serviceId)
     timeCode = oneService[2].decode('ascii')
     assert timeCode in ['i','H','d','m','Y']
     nbTime = oneService[3]
     return f"{nbTime} {timeCode}"
 
-def getValueAlertServiceRuleById(contract,_servicesId:int):
+def getValueAlertServiceRuleById(contract:Contract,_servicesId:int):
     oneServiceRule = getServiceRuleById(contract, _serviceId)
     valueAlert = oneServiceRule[7].decode('ascii')
     assert valueAlert.isnumeric()
     return int(valueAlert)
 
-# <Function addAlert(uint256,uint256,bytes32)>,
-# <Function addIot(uint256,bytes6,string)>,
-# <Function addMeasure(uint256,bytes32,bytes32)>,
-# <Function addRule(bytes8,uint16,string,uint64,uint64,bytes8,bytes8)>,
-# <Function addService(bytes8,string,bytes8,bytes1,uint8)>,
-# <Function renounceOwnership()>,
-# <Function setBridgeAddress(uint256,address)>,
-# <Function setLegislatorAddress(uint256,address)>,
-# <Function setTechMasterAddress(uint256,address)>,
-# <Function toggleContract()>,
-# <Function toggleIOT(uint256,bytes6)>,
-# <Function toggleRule(uint256)>,
-# <Function toggleService(uint256)>,
-# <Function transferOwnership(address)>,
-# <Function _myConfig()>,
-# <Function _ruleIdCounter()>,
-# <Function _serviceIdCounter()>,
-# <Function _serviceIots(uint256,bytes6)>,
-# <Function _serviceRules(uint256)>,
-# <Function _services(uint256)>,
-# <Function owner()>]
 
-# event ContractUpdate(string _message, address _author);         
-# event ServiceUpdate(uint _serviceId, string _message, address _author);  
-# event ServiceRulesUpdate(uint _serviceId, uint _ruleId, string _message, address _author); 
-# event ServiceIotUpdate(uint _serviceId, bytes6 _iotId, string _message, address _author); 
-# event MeasureReceive(uint _serviceId, bytes32 _header, bytes32 _body, address _author); 
-# event AlertReceive(uint _serviceId, uint _ruleId, bytes32 _alert, address _author);     
+############# EVENTS PART #############
 
-# event_keys(['args', 'event', 'logIndex', 'transactionIndex', 'transactionHash', 'address', 'blockHash', 'blockNumber'])
-# event['args]_keys(['_serviceId', '_message', '_author'])
+def fetch_events(web3,contract: Contract, fromBlock, toBlock=None):
+    topic2abi = {event_abi_to_log_topic(_): _
+                    for _ in contract.abi if _['type'] == 'event'}
+
+    logs = web3.eth.getLogs(dict(
+        address=contract.address,
+        fromBlock=fromBlock,
+        toBlock=toBlock
+    ))
+
+    for entry in logs:
+        topic0 = entry['topics'][0]
+        if topic0 in topic2abi:
+            yield get_event_data(web3.codec, topic2abi[topic0], entry)
+
+def getAllEventByName(web3, contract:Contract, contractEventName, fromBlock=0, toBlock='latest'):
+    assert contractEventName in ["ContractUpdate","ServiceUpdate","ServiceRulesUpdate","MeasureReceive","AlertReceive","ServiceIotUpdate"]
+    event_generator = fetch_events(web3,contract,fromBlock,toBlock)
+    list_all_event = []
+    while True:
+        try:
+            event = next(event_generator)
+            if event['event'] == contractEventName:
+                list_all_event.append(event)
+        except:
+            break
+    return list_all_event
+
+

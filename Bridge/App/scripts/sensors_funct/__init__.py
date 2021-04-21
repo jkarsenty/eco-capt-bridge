@@ -18,7 +18,7 @@ def hexToString(hexValue):
     return stringValue
 
 
-def load_measure_config_example(path_measure_config="App/scripts/get_rpi_capteurs/measures_config.json"):
+def load_measure_config_example(path_measure_config="App/scripts/sensors_funct/measures_config.json"):
     with open(path_measure_config,"r") as f:
         measure_config = json.loads(f.read())
     return measure_config
@@ -54,11 +54,11 @@ def generate_measureBody(one_measure:dict)->str:
 def generate_alertBody(one_measure: dict) -> str:
     _alertBody = one_measure["_alertBody"]
     version = _alertBody["version"]
-    idAlerte = _alertBody["idAlerte"]
+    idAlert = _alertBody["idAlert"]
     date = _alertBody["date"]
-    valueAlerte = _alertBody["valueAlerte"]
+    valueAlert = _alertBody["valueAlert"]
     
-    _alerteConfig_hex = "0x" + stringToHex(f"{version}{idAlerte}{date}{valueAlerte}")
+    _alerteConfig_hex = "0x" + stringToHex(f"{version}{idAlert}{date}{valueAlert}")
     assert len(_alerteConfig_hex) == 66
     return _alerteConfig_hex
 

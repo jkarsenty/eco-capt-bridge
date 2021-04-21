@@ -15,9 +15,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0002",
+            "idAlert": "0002",
             "date": "202104131005",
-            "valueAlerte": "00000009"
+            "valueAlert": "00000009"
         }
     },
     {
@@ -36,9 +36,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0002",
+            "idAlert": "0002",
             "date": "202104131008",
-            "valueAlerte": "00000016"
+            "valueAlert": "00000016"
         }
     },
     {
@@ -57,9 +57,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0002",
+            "idAlert": "0002",
             "date": "202104131011",
-            "valueAlerte": "00000009"
+            "valueAlert": "00000009"
         }
     },
     {
@@ -78,9 +78,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0001",
+            "idAlert": "0001",
             "date": "202104131014",
-            "valueAlerte": "00000067"
+            "valueAlert": "00000067"
         }
     },
     {
@@ -99,9 +99,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0002",
+            "idAlert": "0002",
             "date": "202104131017",
-            "valueAlerte": "00000009"
+            "valueAlert": "00000009"
         }
     },
     {
@@ -120,9 +120,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0002",
+            "idAlert": "0002",
             "date": "202104131020",
-            "valueAlerte": "00000000"
+            "valueAlert": "00000000"
         }
     },
     {
@@ -141,9 +141,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0003",
+            "idAlert": "0003",
             "date": "202104131023",
-            "valueAlerte": "00000059"
+            "valueAlert": "00000059"
         }
     },
     {
@@ -162,9 +162,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0001",
+            "idAlert": "0001",
             "date": "202104131026",
-            "valueAlerte": "00000063"
+            "valueAlert": "00000063"
         }
     },
     {
@@ -183,9 +183,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0002",
+            "idAlert": "0002",
             "date": "202104131029",
-            "valueAlerte": "00000009"
+            "valueAlert": "00000009"
         }
     },
     {
@@ -204,9 +204,9 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlerte": "0003",
+            "idAlert": "0003",
             "date": "202104131032",
-            "valueAlerte": "00000049"
+            "valueAlert": "00000049"
         }
     }
 ]

@@ -27,13 +27,13 @@ It's the flow that receives all the data.
 The data include :
 - the measures sent by the sensors
 - the timestamp/frequency written in the blockchain
-- the threshold written in the blockchain
+- the valueAlert written in the blockchain
 - ...
   
 This part also deals with the treatment of all thoses data in order to :  
 - make stats/aggregation
 - make prediction on futures data
-- trigger the alerts in real time when a threshold is exceeded
+- trigger the alerts in real time when a valueAlert is exceeded
 
 
 ## **Certification Part**

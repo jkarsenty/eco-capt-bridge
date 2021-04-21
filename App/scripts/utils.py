@@ -1,5 +1,6 @@
 import datetime as dt
 
+
 def detect_strptime(timestamp):
     try :
         timestamp = dt.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
@@ -25,3 +26,20 @@ def hexToString(hexValue):
     stringValue =  bytes.fromhex(hexValue).decode("ASCII")
     return stringValue
 
+def convertFrequencyToSec(frequency:str):
+    nbTime = frequency.split(' ')[0]
+    timeCode = frequency.split(' ')[1]
+    if timeCode == "i":
+        time_str = dt.datetime.strptime(nbTime, '%M')
+    elif timeCode == "H":
+        time_str = dt.datetime.strftime(nbTime,'%H')
+    elif time_str == "":
+        time_str = dt.datetime.strftime(nbTime,'%d')
+    elif time_str == "":
+        time_str = dt.datetime.strftime(nbTime,'%m')
+    elif time_str == "":
+        time_str = dt.datetime.strftime(nbTime,'%Y')
+    return int(time_str.strftime('%S'))
+
+
+## for 

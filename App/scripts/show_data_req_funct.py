@@ -31,14 +31,14 @@ def addMeasurePost(endpoint:str,_serviceId:int,_measureHeader:str,_measureBody:s
     return response
 
 
-def addAlertPost_v0(endpoint:str, _serviceId:int, _alertConfigId :int, _alertBody:str):
+def addAlertPost_v0(endpoint:str, _serviceId:int, _ruleId :int, _alertBody:str):
     headers = {
         'Content-Type': 'application/json',
     }
 
     data = {
          "_serviceId":_serviceId,
-         "_alertConfigId": _alertConfigId,
+         "_ruleId": _ruleId,
           "_alertBody":_alertBody
          }
 
@@ -47,14 +47,14 @@ def addAlertPost_v0(endpoint:str, _serviceId:int, _alertConfigId :int, _alertBod
     assert response.status_code == 200,response.status_code
     return response
 
-def addAlertPost(endpoint:str, _serviceId:int,_alertConfigId:int, _alertBody:str):
+def addAlertPost(endpoint:str, _serviceId:int,_ruleId:int, _alertBody:str):
     headers = {
         'Content-Type': 'application/json',
     }
 
     data = {
          "_serviceId":_serviceId,
-         "_alertConfigId": _alertConfigId,
+         "_ruleId":_ruleId,
           "_alertBody":_alertBody
          }
 

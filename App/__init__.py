@@ -1,23 +1,30 @@
-import sys
-import os
 import json
+import os
+import sys
+
 sys.path.append('./App')
-import time 
 import datetime as dt
-from flask import Flask,render_template
-from flask import jsonify, request, url_for, redirect
+import time
+
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 
-from scripts.utils import detect_strptime
+from scripts.sensors_funct import (choose_one_measure, generate_alertBody,
+                                   generate_measureBody,
+                                   generate_measureHeader,
+                                   load_measure_config_example)
 
-from scripts.show_data_req_funct import addMeasurePost, addAlertPost
+from scripts.smart_contract_funct import (addAlertFunct, addMeasureFunct,
+                                          connectWeb3, createBridgeWallet,
+                                          generateContract,
+                                          getFrequencyServiceById, getValueAlertServiceRuleById,
+                                          setBridgeAddressFunct,
+                                          setTechMasterAddressFunct)
 
-from scripts.get_rpi_capteurs import load_measure_config_example, choose_one_measure
-from scripts.get_rpi_capteurs import generate_alertBody, generate_measureBody, generate_measureHeader
+from scripts.utils import convertFrequencyToSec, detect_strptime
+from scripts.show_data_req_funct import addAlertPost_v0, addMeasurePost_v0
 
-from scripts.tx_functions import createBridgeWallet, connectWeb3, generateContract
-from scripts.tx_functions import addAlertFunct, addMeasureFunct, setTechMasterAddressFunct, setBridgeAddressFunct
-
+from web3.contract import Contract
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
@@ -55,6 +62,21 @@ except :
         print("error")
         assert False 
 
+app.config["_serviceId"] = 1
+app.config["frequency"] = None
+app.config["valueAlert"] = None
+
+def get_frequency(current_frequency:int,contract:Contract,_serviceId:int):
+    frequency = getFrequencyServiceById(contract,_serviceId)
+    frequency = convertFrequencyToSec(frequency)
+    if frequency != current_frequency:
+        app.config["frequency"] = frequency
+
+    
+def get_value_alert(current_value_alert:int,contract:Contract, _serviceId:int):
+    valueAlert = getValueAlertServiceRuleById(contract,_serviceId)
+    if valueAlert != current_value_alert :
+        app.config["valueAlert"] = valueAlert
 
 @app.route('/')
 def index():
@@ -149,7 +171,7 @@ def addMeasure():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
     
-    while n < 20:
+    while n < 5:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
@@ -157,12 +179,13 @@ def addMeasure():
             one_measure = choose_one_measure(measure_config)
             _measureHeader = generate_measureHeader(one_measure)
             _measureBody = generate_measureBody(one_measure)
-            _serviceId = 3
+            _serviceId = app.config["_serviceId"]
         else :
             _serviceId = data["_serviceId"]
             _measureHeader = data["_measureHeader"]
             _measureBody = data["_measureBody"]
         
+
 
         tx_hash = addMeasureFunct(
             web3=web3,
@@ -196,11 +219,19 @@ def addAlert():
     app.logger.info("Sending Alert...")
     data = request.get_json()
     if data == None:
-        measure_config = load_measure_config_example()
-        one_measure = choose_one_measure(measure_config)
+        # measure_config = load_measure_config_example()
+        # one_measure = choose_one_measure(measure_config)
+        one_measure ={
+            "_alertBody": {
+                "version": "00.01.00",
+                "idAlert": "0001",
+                "date": dt.datetime.now().strftime('%Y%m%d%H%M'),
+                "valueAlert": "00000030"
+            }
+        }
         _alertBody = generate_alertBody(one_measure)
         _ruleId = 0
-        _serviceId = 0
+        _serviceId = app.config["_serviceId"]
     else :
         _serviceId = data["_serviceId"]
         _ruleId = data["_ruleId"]
@@ -236,7 +267,7 @@ def printMeasure():
         _measureHeader = generate_measureHeader(one_measure)
         _measureBody = generate_measureBody(one_measure)
 
-        resp = addMeasurePost(endpoint='printMeasure',_serviceId=0,_measureHeader=_measureHeader,_measureBody=_measureBody)
+        resp = addMeasurePost_v0(endpoint='printMeasure',_serviceId=0,_measureHeader=_measureHeader,_measureBody=_measureBody)
         data = resp.json()
 
     return jsonify(data)
@@ -250,7 +281,7 @@ def printAlert():
         one_measure = choose_one_measure(measure_config)
         _alertBody = generate_alertBody(one_measure)
 
-        resp = addAlertPost(endpoint='printAlert',_serviceId=0,_ruleId = 0,_alertBody=_alertBody)
+        resp = addAlertPost_v0(endpoint='printAlert',_serviceId=0,_ruleId = 0,_alertBody=_alertBody)
         data = resp.json()
 
     return jsonify(data)
@@ -259,6 +290,8 @@ def printAlert():
 @app.route('/sensors', methods=['GET','POST'])
 def sensors():
     title = title = "Eco-Capt-Bridge - Sensors Data"
+    current_value_alert = app.config["valueAlert"]
+
     if request.method == "POST":
         data = request.get_json()
         if data == None:
@@ -302,3 +335,5 @@ def clearSensorsDb():
         return render_template("clearSensorsDb.html",title=title)
     else: 
         return render_template("clearSensorsDb.html",title=title)
+
+

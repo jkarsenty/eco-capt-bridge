@@ -4,7 +4,7 @@ import random
 import datetime as dt
 from scripts.utils import stringToHex, hexToString
 
-def load_measure_config_example(path_measure_config="App/scripts/get_rpi_capteurs/measures_config.json"):
+def load_measure_config_example(path_measure_config="App/scripts/sensors_funct/measures_config.json"):
     with open(path_measure_config,"r") as f:
         measure_config = json.loads(f.read())
     return measure_config
@@ -42,7 +42,7 @@ def generate_one_measure(
             "version": version,
             "idAlert": idAlert,
             "date": timestamp,
-            "valueAlerte": "00000009"
+            "valueAlert": "00000009"
         }
     }
 
@@ -56,8 +56,8 @@ def generate_measureHeader(one_measure:dict)->str:
     timeCode = _measureHeader["timeCode"]
     nbTime = _measureHeader["nbTime"]
     
-    _measureHeader_hex = "0x" + stringToHex(f"{version}{date}{measureType}{timeCode}{nbTime}")
-    assert len(_measureHeader_hex) == 66
+    _measureHeader_hex = stringToHex(f"{version}{date}{measureType}{timeCode}{nbTime}")
+    assert len(_measureHeader_hex) == 66,_measureHeader_hex
     return _measureHeader_hex
 
 def generate_measureBody(one_measure:dict)->str:
@@ -67,18 +67,18 @@ def generate_measureBody(one_measure:dict)->str:
     meanValue = _measureBody["meanValue"]
     medianValue = _measureBody["medianValue"]
     
-    _measureBody_hex = "0x" + stringToHex(f"{maxValue}{minValue}{meanValue}{medianValue}")
-    assert len(_measureBody_hex) == 66
+    _measureBody_hex = stringToHex(f"{maxValue}{minValue}{meanValue}{medianValue}")
+    assert len(_measureBody_hex) == 66,_measureBody_hex
     return _measureBody_hex
 
 def generate_alertBody(one_measure: dict) -> str:
     _alertBody = one_measure["_alertBody"]
     version = _alertBody["version"]
-    idAlerte = _alertBody["idAlerte"]
+    idAlert = _alertBody["idAlert"]
     date = _alertBody["date"]
-    valueAlerte = _alertBody["valueAlerte"]
+    valueAlert = _alertBody["valueAlert"]
     
-    _alerteConfig_hex = "0x" + stringToHex(f"{version}{idAlerte}{date}{valueAlerte}")
-    assert len(_alerteConfig_hex) == 66
+    _alerteConfig_hex = stringToHex(f"{version}{idAlert}{date}{valueAlert}")
+    assert len(_alerteConfig_hex) == 66,_alerteConfig_hex
     return _alerteConfig_hex
 
