@@ -133,8 +133,8 @@ def registerRole():
     else:
         return render_template("registerRole.html", title=title)
 
-@app.route('/capteurs_v2',methods=['GET','POST'])
-def capteurs_v2():
+@app.route('/send_tx',methods=['GET','POST'])
+def send_tx():
     title = "Eco-Capt-Bridge - Send Data"
     if request.method == "POST" :
         if "addMeasure" in request.form :
@@ -148,7 +148,7 @@ def capteurs_v2():
             return redirect(url_for("printAlert"))
 
     else :
-        return render_template("capteurs_v2.html", title=title)
+        return render_template("send_tx.html", title=title)
 
 ############# ADD PART MANUALLY #############
 @app.route('/addMeasure',methods=['GET','POST'])
@@ -162,7 +162,7 @@ def addMeasure():
     bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
     contract = generateContract(web3, contract_address, abi_str)
     
-    while n < 5:
+    while n < 1:
         app.logger.info("Sending Data...")
         data = request.get_json()
         if data == None:
@@ -195,7 +195,7 @@ def addMeasure():
             time.sleep(30)
         n += 1
 
-    return redirect(url_for("capteurs_v2"))
+    return redirect(url_for("send_tx"))
 
 @app.route('/addAlert',methods=['GET','POST'])
 def addAlert():
@@ -245,7 +245,7 @@ def addAlert():
     except:
         time.sleep(30)
 
-    return redirect(url_for("capteurs_v2"))
+    return redirect(url_for("send_tx"))
 
 ############# SHOW EXAMPLES PART #############
 @app.route('/printMeasure',methods=['GET','POST'])
@@ -321,78 +321,92 @@ def sensors():
         data = request.get_json()
         if data == None:
             data = request.form
-        humidity = data["humidity"]
-        temperature = data["temperature"]
-        timestamp= data["timestamp"]
-        assert humidity != None and temperature != None and timestamp != None
-        try:
-            timestamp = detect_strptime(timestamp)  # '%Y-%m-%d %H:%M:%S' format
-        except:
-            return "THE DATE FORMAT IS NOT GOOD"          
-
-        news_sensors_data = SensorsDatabase(temperature=temperature,humidity=humidity,timestamp=timestamp)
-        try :
-            db.session.add(news_sensors_data)
-            db.session.commit()
-        except:
-            return "<h1> ERROR WITH THE ADDING TO DATABASE <h1/>"
+        app.logger.info(f"\n\n{data}\n")
         
-        ##### CERTIFICATION (ALERT) PART #####
-        
-
-        ##### CERTIFICATION (MEASURES) PART #####
-        timeSendMeasure = detectEachFrequency(dateLastQuery,frequency)
-        app.logger.info(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
-        
-        if timeSendMeasure :
-            web3 = connectWeb3(infura_id=infura_id)
-            bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
-            contract = generateContract(web3, contract_address, abi_str)
-
-            sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
-            temperature_data = [d.temperature for d in sensors_data]
-
-            maxValue,minValue,meanValue,medianValue = statsSensorsData(temperature_data)
-            
-            timestamp = timestamp.strftime('%Y%m%d%H%M')
-            one_measure = generate_one_measure(maxValue,minValue,meanValue,medianValue,timestamp)
-            _measureHeader = generate_measureHeader(one_measure)
-            _measureBody = generate_measureBody(one_measure)
-            _serviceId = app.config["_serviceId"]
-
-            app.logger.info(f"\n\nSend tx To Blockchain\n")
-       
-            tx_hash = addMeasureFunct(
-                web3=web3,
-                contract=contract,
-                bridgeAddress=bridgeAddress,
-                private_key=private_key,
-                _serviceId=_serviceId,
-                _measureHeader=_measureHeader,
-                _measurebody=_measureBody
-                )
-
-            app.logger.info("Data Sent to the Blockchain")
-            time.sleep(5)
+        if "clear_db" in data :
             try:
-                web3.eth.waitForTransactionReceipt(tx_hash)
+                num_rows_deleted = db.session.query(SensorsDatabase).delete()
+                app.logger.info(f"\n\n{num_rows_deleted}\n")
+                db.session.commit()
             except:
-                time.sleep(10)
+                db.session.rollback()
 
-            app.config["dateLastQuery"] = date_to
-            app.logger.info(
-                f"\n\napp.config['dateLastQuery']: {app.config['dateLastQuery']}\n")
+            return redirect(url_for("sensors"))
+    
+        else:
+            # add_to_db
+            humidity = data["humidity"]
+            temperature = data["temperature"]
+            timestamp= data["timestamp"]
+            assert humidity != None and temperature != None and timestamp != None
+            try:
+                timestamp = detect_strptime(timestamp)  # '%Y-%m-%d %H:%M:%S' format
+            except:
+                return "THE DATE FORMAT IS NOT GOOD"          
+
+            news_sensors_data = SensorsDatabase(temperature=temperature,humidity=humidity,timestamp=timestamp)
+            try :
+                db.session.add(news_sensors_data)
+                db.session.commit()
+            except:
+                return "<h1> ERROR WITH THE ADDING TO DATABASE <h1/>"
+            
+            ##### CERTIFICATION (ALERT) PART #####
+            
+
+            ##### CERTIFICATION (MEASURES) PART #####
+            timeSendMeasure = detectEachFrequency(dateLastQuery,frequency)
+            app.logger.info(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
+            timeSendMeasure = False
+            if timeSendMeasure :
+                web3 = connectWeb3(infura_id=infura_id)
+                bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+                contract = generateContract(web3, contract_address, abi_str)
+
+                sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
+                temperature_data = [d.temperature for d in sensors_data]
+
+                maxValue,minValue,meanValue,medianValue = statsSensorsData(temperature_data)
+                
+                timestamp = timestamp.strftime('%Y%m%d%H%M')
+                one_measure = generate_one_measure(maxValue,minValue,meanValue,medianValue,timestamp)
+                _measureHeader = generate_measureHeader(one_measure)
+                _measureBody = generate_measureBody(one_measure)
+                _serviceId = app.config["_serviceId"]
+
+                app.logger.info(f"\n\nSend tx To Blockchain\n")
         
-        ##### READ INFOS FROM BLOCKCHAIN PART #####
-        
+                tx_hash = addMeasureFunct(
+                    web3=web3,
+                    contract=contract,
+                    bridgeAddress=bridgeAddress,
+                    private_key=private_key,
+                    _serviceId=_serviceId,
+                    _measureHeader=_measureHeader,
+                    _measurebody=_measureBody
+                    )
+
+                app.logger.info("Data Sent to the Blockchain")
+                time.sleep(5)
+                try:
+                    web3.eth.waitForTransactionReceipt(tx_hash)
+                except:
+                    time.sleep(10)
+
+                app.config["dateLastQuery"] = date_to
+                app.logger.info(
+                    f"\n\napp.config['dateLastQuery']: {app.config['dateLastQuery']}\n")
+            
+            ##### READ INFOS FROM BLOCKCHAIN PART #####
         
         
         return redirect(url_for("sensors"))
+    
     else: 
         # GET
-        sensors_data = db.session.query(SensorsDatabase).order_by(SensorsDatabase.timestamp)
-        # sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
-        # temperature_data = [d.temperature for d in sensors_data]
+        # sensors_data = db.session.query(SensorsDatabase).order_by(SensorsDatabase.timestamp)
+        sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
+        temperature_data = [d.temperature for d in sensors_data]
         return render_template("sensors.html",title=title,sensors_data=sensors_data)
 
 

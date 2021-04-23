@@ -33,7 +33,6 @@ def detect_strptime(timestamp):
                 assert False
     return timestamp
 
-
 def convertFrequencyToSec(frequency:str)->int:
     nbTime = frequency.split(' ')[0]
     timeCode = frequency.split(' ')[1]
@@ -63,7 +62,7 @@ def statsSensorsData(data_list):
     return int(np.max(data_list)),int(np.min(data_list)),int(np.mean(data_list)),int(np.median(data_list))
 
 def readSensorsDatabase(SensorsDatabase,date_from:str,date_to:str):
-    sensors_data = SensorsDatabase.query.filter(SensorsDatabase.timestamp.between(date_from, date_to))
+    sensors_data = SensorsDatabase.query.filter(SensorsDatabase.timestamp.between(date_from, date_to)).order_by(SensorsDatabase.timestamp)
     return sensors_data
 
 def getMaxValueSensors(db,SensorsDatabase):
