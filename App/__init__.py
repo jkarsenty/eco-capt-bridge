@@ -32,6 +32,7 @@ from scripts.utils import (convertFrequencyToSec, detect_strptime,
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
+
 # Initialize Database
 db = SQLAlchemy(app)
 
@@ -67,7 +68,7 @@ except :
         assert False 
 
 app.config["_serviceId"] = 1
-app.config["frequency"] = 60 # by default 1min = 60s
+app.config["frequency"] = 3600 # by default 1H = 3600s
 app.config["valueAlert"] = None
 app.config["dateLastQuery"] = "2021-04-01 10:10:00" 
 
@@ -87,20 +88,20 @@ def index():
     title = "Eco-Capt-Bridge - Home"
     return render_template("index.html",title=title)
 
-## OWNER & TECHMASTER PART ##
-@app.route('/ownerPage', methods=['GET', 'POST'])
-def ownerPage():
-    title = "Eco-Capt-Bridge - Owner Page"
+############# OWNER & TECHMASTER PART #############
+@app.route('/registerRole', methods=['GET', 'POST'])
+def registerRole():
+    title = "Eco-Capt-Bridge - Register Role Address"
     if request.method == "POST":
-
+        infura_id = app.config["INFURA_ID"]
+        seed = app.config["SEED"]
+        contract_address = app.config["CONTRACT_ADRESS"]
+        abi_str = app.config["ABI"]
+        web3 = connectWeb3(infura_id=infura_id)
+        bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+        contract = generateContract(web3, contract_address, abi_str)
+        
         if "setTechMaster" in request.form:
-            infura_id = app.config["INFURA_ID"]
-            seed = app.config["SEED"]
-            contract_address = app.config["CONTRACT_ADRESS"]
-            abi_str = app.config["ABI"]
-            web3 = connectWeb3(infura_id=infura_id)
-            bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
-            contract = generateContract(web3, contract_address, abi_str)
 
             _serviceId = int(request.form["serviceId"])
             _techMasterAddress = request.form["techMasterAdress"]
@@ -113,24 +114,9 @@ def ownerPage():
                 _serviceId=_serviceId,
                 _techMasterAddress=_techMasterAddress
             )
-        return render_template("ownerPage.html", title=title)
-    else:
-        return render_template("ownerPage.html", title=title)
-
-@app.route('/techMasterPage', methods=['GET', 'POST'])
-def techMasterPage():
-    title = "Eco-Capt-Bridge - techMasterPage"
-    
-    if request.method == "POST":
-        if "bridgeAddress" in request.form:
-            infura_id = app.config["INFURA_ID"]
-            seed = app.config["SEED"]
-            contract_address = app.config["CONTRACT_ADRESS"]
-            abi_str = app.config["ABI"]
-            web3 = connectWeb3(infura_id=infura_id)
-            bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
-            contract = generateContract(web3, contract_address, abi_str)
-
+        
+        elif "bridgeAddress" in request.form:
+            
             _serviceId = int(request.form["serviceId"])
             _techMasterAddress = request.form["bridgeAddress"]
 
@@ -142,9 +128,10 @@ def techMasterPage():
                 _serviceId=_serviceId,
                 _techMasterAddress=_techMasterAddress
             )
-        return render_template("techMasterPage.html", title=title)
+        return render_template("registerRole.html", title=title)
+        
     else:
-        return render_template("techMasterPage.html", title=title)
+        return render_template("registerRole.html", title=title)
 
 @app.route('/capteurs_v2',methods=['GET','POST'])
 def capteurs_v2():
@@ -163,7 +150,7 @@ def capteurs_v2():
     else :
         return render_template("capteurs_v2.html", title=title)
 
-## ADD PART MANUALLY ##
+############# ADD PART MANUALLY #############
 @app.route('/addMeasure',methods=['GET','POST'])
 def addMeasure():
     n=0
@@ -260,7 +247,7 @@ def addAlert():
 
     return redirect(url_for("capteurs_v2"))
 
-## SHOW EXAMPLES PART ##
+############# SHOW EXAMPLES PART #############
 @app.route('/printMeasure',methods=['GET','POST'])
 def printMeasure():
     app.logger.info("Show Measure")
@@ -290,26 +277,47 @@ def printAlert():
 
     return jsonify(data)
 
+############# CLEAR DATABASE MANUALLY #############
+@app.route("/clearSensorsDb", methods=["GET", "POST"])
+def clearSensorsDb():
+    title = title = "Eco-Capt-Bridge - Clear Database"
+    if request.method == "POST":
 
+        try:
+            num_rows_deleted = db.session.query(SensorsDatabase).delete()
+            app.logger.info(num_rows_deleted)
+            db.session.commit()
+        except:
+            db.session.rollback()
 
-## SENSORS BRIDGE PART ##
+        return render_template("clearSensorsDb.html", title=title)
+    else:
+        return render_template("clearSensorsDb.html", title=title)
+
+###############################################
+############# SENSORS BRIDGE PART #############
+###############################################
 @app.route('/sensors', methods=['GET','POST'])
 def sensors():
     title = title = "Eco-Capt-Bridge - Sensors Data"
 
+    ## Blockchain tx
     infura_id = app.config["INFURA_ID"]
     seed = app.config["SEED"]
     contract_address = app.config["CONTRACT_ADRESS"]
     abi_str = app.config["ABI"]
     
+    ## Infos for Sensors
     current_value_alert = app.config["valueAlert"]
     dateLastQuery = app.config["dateLastQuery"]
     date_to = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')    
     frequency = app.config["frequency"]
-
+    app.logger.info(
+        f"\n\ndateLastQuery: {dateLastQuery}\ndate_to: {date_to}\nfrequency: {frequency}\ncurrent_value_alert: {current_value_alert}\n")
+    
     if request.method == "POST":
 
-        ## Save data in database  
+        ##### STORAGE DATA PART #####
         data = request.get_json()
         if data == None:
             data = request.form
@@ -318,7 +326,7 @@ def sensors():
         timestamp= data["timestamp"]
         assert humidity != None and temperature != None and timestamp != None
         try:
-            timestamp = detect_strptime(timestamp)
+            timestamp = detect_strptime(timestamp)  # '%Y-%m-%d %H:%M:%S' format
         except:
             return "THE DATE FORMAT IS NOT GOOD"          
 
@@ -328,26 +336,32 @@ def sensors():
             db.session.commit()
         except:
             return "<h1> ERROR WITH THE ADDING TO DATABASE <h1/>"
+        
+        ##### CERTIFICATION (ALERT) PART #####
+        
 
-        return redirect(url_for("sensors")) # jsonify(data)
-
-        ## detect if it's time to send measure
+        ##### CERTIFICATION (MEASURES) PART #####
         timeSendMeasure = detectEachFrequency(dateLastQuery,frequency)
+        app.logger.info(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
+        
         if timeSendMeasure :
-            
             web3 = connectWeb3(infura_id=infura_id)
             bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
             contract = generateContract(web3, contract_address, abi_str)
 
             sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
             temperature_data = [d.temperature for d in sensors_data]
+
             maxValue,minValue,meanValue,medianValue = statsSensorsData(temperature_data)
-            one_measure = generate_one_measure(maxValue,minValue,meanValue,medianValue)
+            
+            timestamp = timestamp.strftime('%Y%m%d%H%M')
+            one_measure = generate_one_measure(maxValue,minValue,meanValue,medianValue,timestamp)
             _measureHeader = generate_measureHeader(one_measure)
             _measureBody = generate_measureBody(one_measure)
             _serviceId = app.config["_serviceId"]
-            
-            
+
+            app.logger.info(f"\n\nSend tx To Blockchain\n")
+       
             tx_hash = addMeasureFunct(
                 web3=web3,
                 contract=contract,
@@ -366,27 +380,19 @@ def sensors():
                 time.sleep(10)
 
             app.config["dateLastQuery"] = date_to
-    
+            app.logger.info(
+                f"\n\napp.config['dateLastQuery']: {app.config['dateLastQuery']}\n")
+        
+        ##### READ INFOS FROM BLOCKCHAIN PART #####
+        
+        
+        
+        return redirect(url_for("sensors"))
     else: 
         # GET
-        sensors_data = ""
+        sensors_data = db.session.query(SensorsDatabase).order_by(SensorsDatabase.timestamp)
         # sensors_data = readSensorsDatabase(SensorsDatabase,date_from=dateLastQuery,date_to=date_to)
         # temperature_data = [d.temperature for d in sensors_data]
         return render_template("sensors.html",title=title,sensors_data=sensors_data)
 
-@app.route("/clearSensorsDb", methods=["GET","POST"])
-def clearSensorsDb():
-    title = title = "Eco-Capt-Bridge - Clear Database"
-    if request.method == "POST":
-        
-        try:
-            num_rows_deleted = db.session.query(SensorsDatabase).delete()
-            app.logger.info(num_rows_deleted)
-            db.session.commit()
-        except:
-            db.session.rollback()
-
-        return render_template("clearSensorsDb.html",title=title)
-    else: 
-        return render_template("clearSensorsDb.html",title=title)
 

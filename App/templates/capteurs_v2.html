@@ -37,38 +37,3 @@
     </div>
 {% endblock %}
 
-{% block form %}
-    <form method="POST">
-        <div>
-            <label for="data">_measureHeader</label>
-            <input 
-            type="text"
-            class="form-control"
-            id="_measureHeader"
-            name="_measureHeader"
-            placeholder="str"
-            >
-        </div>
-        <div>
-            <label for="data">_measureBody</label>
-            <input 
-            type="text"
-            class="form-control"
-            id="_measureBody"
-            name="_measureBody"
-            placeholder="str"
-            >
-        </div>
-        <div>
-            <label for="data">_alertBody</label>
-            <input 
-            type="text"
-            class="form-control"
-            id="_alertBody"
-            name="_alertBody"
-            placeholder="str"
-            >
-        </div>
-        <button type="submit" class="btn btn-primary">Send Data</button>
-    </form>
-{% endblock %}

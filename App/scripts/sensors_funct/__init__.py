@@ -13,17 +13,12 @@ def choose_one_measure(measure_config:List[dict]):
     one_measure = random.choice(measure_config)
     return one_measure 
     
-def generate_one_measure(
-    maxValue:int,
-    minValue:int,
-    meanValue:int,
-    medianValue:str,
-    version:str="00.01.00",
-    measureType:str="SON_0001",
-    timeCode:str="i",
-    nbTime:str="001",
-    idAlert:str="0002"
-    ):
+def generate_one_measure(maxValue:int,minValue:int,meanValue:int,medianValue:int,timestamp,version:str="00.01.00",measureType:str="SON_0001",timeCode:str="i",nbTime:str="001",idAlert:str="0002"):
+    maxValue = str(maxValue)
+    minValue = str(minValue)
+    meanValue = str(meanValue)
+    medianValue = str(medianValue)
+
     while len(maxValue)!=8:
         maxValue = "0"+maxValue
     while len(minValue)!=8:

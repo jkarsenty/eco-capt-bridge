@@ -22,12 +22,17 @@ def detect_strptime(timestamp):
     except:
         try:
             timestamp = dt.datetime.strptime(timestamp, '%Y-%m-%d %H:%M')
+            timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            timestamp = dt.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
         except:
             try:
                 timestamp = dt.datetime.strptime(timestamp, '%Y-%m-%d')
+                timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                timestamp = dt.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
             except:
                 assert False
     return timestamp
+
 
 def convertFrequencyToSec(frequency:str)->int:
     nbTime = frequency.split(' ')[0]
@@ -35,13 +40,13 @@ def convertFrequencyToSec(frequency:str)->int:
     if timeCode == "i":
         time_str = dt.datetime.strptime(nbTime, '%M')
     elif timeCode == "H":
-        time_str = dt.datetime.strftime(nbTime,'%H')
+        time_str = dt.datetime.strptime(nbTime, '%H')
     elif time_str == "":
-        time_str = dt.datetime.strftime(nbTime,'%d')
+        time_str = dt.datetime.strptime(nbTime, '%d')
     elif time_str == "":
-        time_str = dt.datetime.strftime(nbTime,'%m')
+        time_str = dt.datetime.strptime(nbTime, '%m')
     elif time_str == "":
-        time_str = dt.datetime.strftime(nbTime,'%Y')
+        time_str = dt.datetime.strptime(nbTime, '%Y')
     return int(time_str.strftime('%S'))
 
 def detectEachFrequency(dateLastQuery,frequency):
@@ -55,7 +60,7 @@ def detectEachFrequency(dateLastQuery,frequency):
 
 ## Interroger base de données par tranche de sequence
 def statsSensorsData(data_list):
-    return np.max(data_list),np.min(data_list),np.mean(data_list),np.median(data_list)
+    return int(np.max(data_list)),int(np.min(data_list)),int(np.mean(data_list)),int(np.median(data_list))
 
 def readSensorsDatabase(SensorsDatabase,date_from:str,date_to:str):
     sensors_data = SensorsDatabase.query.filter(SensorsDatabase.timestamp.between(date_from, date_to))
