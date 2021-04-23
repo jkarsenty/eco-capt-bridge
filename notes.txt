@@ -126,6 +126,8 @@ owner = "0x9F52Fd356973FAA3ECe41e99F37bf4F3bAEBd096"
 tech_master = "0x9F52Fd356973FAA3ECe41e99F37bf4F3bAEBd096"
 CONTRACT_ADRESS ="0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
 
+# heroku config
+https://devcenter.heroku.com/articles/config-vars
 
 # <Function addAlert(uint256,uint256,bytes32)>,
 # <Function addIot(uint256,bytes6,string)>,
