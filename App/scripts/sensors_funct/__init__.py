@@ -13,7 +13,7 @@ def choose_one_measure(measure_config:List[dict]):
     one_measure = random.choice(measure_config)
     return one_measure 
     
-def generate_one_measure(maxValue:int,minValue:int,meanValue:int,medianValue:int,timestamp,version:str="00.01.00",measureType:str="SON_0001",timeCode:str="i",nbTime:str="001",idAlert:str="0002"):
+def generate_one_measure(maxValue:int,minValue:int,meanValue:int,medianValue:int,timestamp,version:str="00.01.00",measureType:str="SON_0001",timeCode:str="i",nbTime:str="001"):
     maxValue = str(maxValue)
     minValue = str(minValue)
     meanValue = str(meanValue)
@@ -40,17 +40,24 @@ def generate_one_measure(maxValue:int,minValue:int,meanValue:int,medianValue:int
             "minValue": minValue,
             "meanValue": meanValue,
             "medianValue": medianValue
-        },
-        "_alertBody": {
-            "version": version,
-            "idAlert": idAlert,
-            "date": timestamp,
-            "valueAlert": "00000009"
         }
     }
 
     return one_measure
-   
+
+def generate_one_alert(codeAlert,valueAlert,timestamp,version:str="00.01.00"):
+    one_alert = {
+        "_alertBody": {
+            "version": version,
+            "codeAlert": codeAlert,
+            "date": timestamp,
+            "valueAlert":valueAlert
+        }
+    }
+    return one_alert
+
+    
+
 def generate_measureHeader(one_measure:dict)->str:
     _measureHeader = one_measure["_measureHeader"]
     version = _measureHeader["version"]
@@ -74,14 +81,14 @@ def generate_measureBody(one_measure:dict)->str:
     assert len(_measureBody_hex) == 66,_measureBody_hex
     return _measureBody_hex
 
-def generate_alertBody(one_measure: dict) -> str:
-    _alertBody = one_measure["_alertBody"]
+def generate_alertBody(one_alert: dict) -> str:
+    _alertBody = one_alert["_alertBody"]
     version = _alertBody["version"]
-    idAlert = _alertBody["idAlert"]
+    codeAlert = _alertBody["codeAlert"]
     date = _alertBody["date"]
     valueAlert = _alertBody["valueAlert"]
     
-    _alerteConfig_hex = stringToHex(f"{version}{idAlert}{date}{valueAlert}")
+    _alerteConfig_hex = stringToHex(f"{version}{codeAlert}{date}{valueAlert}")
     assert len(_alerteConfig_hex) == 66,_alerteConfig_hex
     return _alerteConfig_hex
 

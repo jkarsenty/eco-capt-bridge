@@ -65,19 +65,9 @@ def readSensorsDatabase(SensorsDatabase,date_from:str,date_to:str):
     sensors_data = SensorsDatabase.query.filter(SensorsDatabase.timestamp.between(date_from, date_to)).order_by(SensorsDatabase.timestamp)
     return sensors_data
 
-def getMaxValueSensors(db,SensorsDatabase):
+def getStatsSensors(db,SensorsDatabase):
     maxValue = db.session.query(func.max(SensorsDatabase.temperature)).scalar()
-    return maxValue
-
-def getMinValueSensors(db,SensorsDatabase):
     minValue = db.session.query(func.min(SensorsDatabase.temperature)).scalar()
-    return minValue
-
-def getMeanValueSensors(db,SensorsDatabase):
     meanValue = db.session.query(func.avg(SensorsDatabase.temperature)).scalar()
-    return meanValue
+    return maxValue, minValue, meanValue
 
-def getMedianValueSensors(db,SensorsDatabase):
-    # medianValue = db.session.query(func.median(SensorsDatabase.temperature)).scalar()
-    medianValue = 0
-    return medianValue
