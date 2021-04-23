@@ -158,3 +158,10 @@ CONTRACT_ADRESS ="0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
 
 # event_keys(['args', 'event', 'logIndex', 'transactionIndex', 'transactionHash', 'address', 'blockHash', 'blockNumber'])
 # event['args]_keys(['_serviceId', '_message', '_author'])
+
+
+# EAU
+https://www.senat.fr/rap/l02-215-1/l02-215-11.html
+
+# NUCLEAIRE
+https://www.asn.fr/Reglementer/La-reglementation/Le-cadre-general-de-la-legislation-et-de-la-reglementation-des-activites-nucleaires/La-protection-generale-de-la-population
