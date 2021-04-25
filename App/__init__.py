@@ -1,7 +1,11 @@
 import json
+import logging
 import os
 import sys
 
+from flask import Flask
+
+app = Flask(__name__)
 sys.path.append('./App')
 import datetime as dt
 import time
@@ -13,25 +17,26 @@ from web3.contract import Contract
 
 from scripts.sensors_funct import (choose_one_measure, generate_alertBody,
                                    generate_measureBody,
-                                   generate_measureHeader,
-                                   load_measure_config_example,
-                                   generate_one_measure,generate_one_alert)
-
+                                   generate_measureHeader, generate_one_alert,
+                                   generate_one_measure,
+                                   load_measure_config_example)
 from scripts.show_data_req_funct import addAlertPost_v0, addMeasurePost_v0
-
 from scripts.smart_contract_funct import (addAlertFunct, addMeasureFunct,
                                           connectWeb3, createBridgeWallet,
                                           generateContract,
+                                          getCodeAlertServiceRuleById,
                                           getFrequencyServiceById,
                                           getValueAlertServiceRuleById,
-                                          getCodeAlertServiceRuleById,
                                           setBridgeAddressFunct,
                                           setTechMasterAddressFunct)
-
 from scripts.utils import (convertFrequencyToSec, detect_strptime,
-                           readSensorsDatabase,detectEachFrequency,statsSensorsData)
+                           detectEachFrequency, readSensorsDatabase,
+                           statsSensorsData)
 
 app = Flask(__name__)
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
+
 app.config['SQLALCHEMY_DATABASE_URI']="sqlite:///sensors_data.db"
 
 # Initialize Database
