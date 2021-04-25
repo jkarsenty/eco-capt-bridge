@@ -2,11 +2,8 @@ import json
 import logging
 import os
 import sys
-
-from flask import Flask
-
-app = Flask(__name__)
 sys.path.append('./App')
+
 import datetime as dt
 import time
 
