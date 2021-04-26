@@ -7,6 +7,12 @@ import datetime as dt
 #time.strftime('%I:%M:%S')
 import csv
 import sys
+import re,uuid
+
+def get_mac_address():
+    # ether en0 or wlan0
+    mac = ''.join(re.findall('..', '%012x' % uuid.getnode())) 
+    return mac
 
 def get_sensors_data(pin:int):
     # Sensors are Adafruit_DHT.DHT22
@@ -33,7 +39,7 @@ def get_sensors_data(pin:int):
 import requests
 
 
-def send_data(temperature:float,humidity:float,timestamp:str,_serviceId:int):
+def send_data(temperature:float, humidity:float, timestamp:str, mac_address:str, _serviceId:int):
 
     url_heroku = 'https://eco-capt-bridge.herokuapp.com/sensors'
     # url = 'http://127.0.0.1:5000/sensors'
@@ -45,6 +51,7 @@ def send_data(temperature:float,humidity:float,timestamp:str,_serviceId:int):
         'temperature':temperature,
         'humidity': humidity,
         'timestamp' : timestamp,
+        "mac_address": mac_address,
         '_serviceId':_serviceId
     }
 
@@ -58,6 +65,7 @@ if __name__ == '__main__':
     csvfile = 'temp.csv'
     isActive = False
     _serviceId = 1
+    mac_address = get_mac_address()
 
     while isActive : 
         temperature,humidity,timestamp = get_sensors_data(pin=4)
@@ -67,17 +75,17 @@ if __name__ == '__main__':
             print('can not connect to the sensor!')
         # timeC =f'{time.strftime('%Y')}-{time.strftime('%m')}-{time.strftime('%d')} {time.strftime('%I')}:{time.strftime('%M')}:{time.strftime('%S')}' 
         
-        data = [temperature, humidity, timestamp,_serviceId]
+        data = [temperature, humidity, timestamp, mac_address,_serviceId]
 
         # Add line of new data to the file
         # with open(csvfile, 'a')as output:
         #     writer = csv.writer(output, delimiter=',', lineterminator = '\n')
         #     writer.writerow(data)
 
-        resp = send_data(temperature, humidity, timestamp,_serviceId)
+        resp = send_data(temperature, humidity, timestamp, mac_address, _serviceId)
         print(data)
         time.sleep(10) # update script every 10 seconds
 
     temperature,humidity,timestamp = get_sensors_data(pin=4)
-    resp = send_data(temperature, humidity, timestamp,_serviceId)
+    resp = send_data(temperature, humidity, timestamp, mac_address, _serviceId)
     
