@@ -14,6 +14,10 @@ To open the app :
 heroku ps:scale web=1
 heroku open
 ```
+To set some env varaible in heroku :
+```sh
+heroku config:set MY_VARIABLE=value_of_the_variable
+```
 
 Launch Flask App :  
 ```sh

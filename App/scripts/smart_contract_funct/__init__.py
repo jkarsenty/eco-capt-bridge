@@ -219,7 +219,7 @@ def getServicesRuleById(contract:Contract, _serviceId: int):
     """get Rule of a specific Service"""
     return contract.functions._serviceRules(_serviceId).call()
 
-def getAllServiceRulesFunct(contract:Contract,_servicesId:int):
+def getAllServiceRulesFunct(contract:Contract,_serviceId:int):
     """get all Services Rule"""
     _ruleIdCounter = getRuleIdCounter(contract)
     allServicesRule = []
@@ -259,17 +259,16 @@ def getFrequencyServiceById(contract:Contract,_serviceId:int)->str:
     nbTime = oneService[3]
     return f"{nbTime} {timeCode}"
 
-def getValueAlertServiceRuleById(contract:Contract,_servicesId:int)->int:
-    oneServiceRule = getServiceRuleById(contract, _serviceId)
+def getValueAlertServiceRuleById(contract:Contract,_serviceId:int)->int:
+    oneServiceRule = getServicesRuleById(contract, _serviceId)
     valueAlert = oneServiceRule[7].decode('ascii')
     assert valueAlert.isnumeric()
     return int(valueAlert)
 
-def getCodeAlertServiceRuleById(contract:Contract,_servicesId:int):
-    oneServiceRule = getServiceRuleById(contract, _serviceId)
+def getCodeAlertServiceRuleById(contract:Contract,_serviceId:int):
+    oneServiceRule = getServicesRuleById(contract, _serviceId)
     codeAlert = oneServiceRule[6].decode('ascii')
-    assert codeAlert.isnumeric()
-    return int(codeAlert)
+    return codeAlert
 
 ############# EVENTS PART #############
 

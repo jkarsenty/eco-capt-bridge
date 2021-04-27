@@ -15,7 +15,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211213",
             "valueAlert": "00000045"
         }
@@ -36,7 +36,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211216",
             "valueAlert": "00000069"
         }
@@ -57,7 +57,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211219",
             "valueAlert": "00000055"
         }
@@ -78,7 +78,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211222",
             "valueAlert": "00000067"
         }
@@ -99,7 +99,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211225",
             "valueAlert": "00000065"
         }
@@ -120,7 +120,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211228",
             "valueAlert": "00000065"
         }
@@ -141,7 +141,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211231",
             "valueAlert": "00000075"
         }
@@ -162,7 +162,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211234",
             "valueAlert": "00000063"
         }
@@ -183,7 +183,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211237",
             "valueAlert": "00000085"
         }
@@ -204,7 +204,7 @@
         },
         "_alertBody": {
             "version": "00.01.00",
-            "idAlert": "0001",
+            "codeAlert": "0001",
             "date": "202104211240",
             "valueAlert": "00000061"
         }

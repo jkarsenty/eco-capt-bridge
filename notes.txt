@@ -126,6 +126,8 @@ owner = "0x9F52Fd356973FAA3ECe41e99F37bf4F3bAEBd096"
 tech_master = "0x9F52Fd356973FAA3ECe41e99F37bf4F3bAEBd096"
 CONTRACT_ADRESS ="0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
 
+# heroku config
+https://devcenter.heroku.com/articles/config-vars
 
 # <Function addAlert(uint256,uint256,bytes32)>,
 # <Function addIot(uint256,bytes6,string)>,
@@ -160,6 +162,8 @@ CONTRACT_ADRESS ="0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
 # event['args]_keys(['_serviceId', '_message', '_author'])
 
 
+# EAU
+https://www.senat.fr/rap/l02-215-1/l02-215-11.html
 
-Un bridge est linké a un service donc doit lire les events toutes les x min 
-et verifier dans tous les event "new service" que service i
+# NUCLEAIRE
+https://www.asn.fr/Reglementer/La-reglementation/Le-cadre-general-de-la-legislation-et-de-la-reglementation-des-activites-nucleaires/La-protection-generale-de-la-population
