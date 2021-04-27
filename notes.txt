@@ -158,3 +158,8 @@ CONTRACT_ADRESS ="0xe6201078EDD7987375E25F8AC53579F284Eab2cE"
 
 # event_keys(['args', 'event', 'logIndex', 'transactionIndex', 'transactionHash', 'address', 'blockHash', 'blockNumber'])
 # event['args]_keys(['_serviceId', '_message', '_author'])
+
+
+
+Un bridge est linké a un service donc doit lire les events toutes les x min 
+et verifier dans tous les event "new service" que service i
