@@ -30,12 +30,13 @@ from scripts.utils import (convertFrequencyToSec, detect_strptime,
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///sensors_data.db"
 
+print("TEST of PRINT")
+
+
 # Initialize Database
 db = SQLAlchemy(app)
 
 # Create Database Model
-
-
 class SensorsDatabase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     temperature = db.Column(db.Float, nullable=False)
