@@ -30,8 +30,6 @@ from scripts.utils import (convertFrequencyToSec, detect_strptime,
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///sensors_data.db"
 
-print("TEST of PRINT")
-
 
 # Initialize Database
 db = SQLAlchemy(app)
@@ -78,6 +76,7 @@ def index():
     title = "Eco-Capt-Bridge - Home"
     return render_template("index.html", title=title)
 
+
 ###############################################
 ############# SENSORS BRIDGE PART #############
 ###############################################
@@ -97,8 +96,9 @@ def sensors():
     dateLastQuery = app.config["dateLastQuery"]
     date_to = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     frequency = app.config["frequency"]
-    app.logger.info(
-        f"\n\ndateLastQuery: {dateLastQuery}\ndate_to: {date_to}\nfrequency: {frequency}\n")
+    # app.logger.info(
+    #     f"\n\ndateLastQuery: {dateLastQuery}\ndate_to: {date_to}\nfrequency: {frequency}\n")
+    print(f"\n\ndateLastQuery: {dateLastQuery}\ndate_to: {date_to}\nfrequency: {frequency}\n")
 
     if request.method == "POST":
 
@@ -106,12 +106,14 @@ def sensors():
         data = request.get_json()
         if data == None:
             data = request.form
-        app.logger.info(f"\n\n{data}\n")
+        # app.logger.info(f"\n\n{data}\n")
+        print(f"\n\n{data}\n")
 
         if "clear_db" in data:
             try:
                 num_rows_deleted = db.session.query(SensorsDatabase).delete()
-                app.logger.info(f"\n\n{num_rows_deleted}\n")
+                # app.logger.info(f"\n\n{num_rows_deleted}\n")
+                print(f"\n\n{num_rows_deleted}\n")
                 db.session.commit()
             except:
                 db.session.rollback()
@@ -152,11 +154,13 @@ def sensors():
             ##### CERTIFICATION (ALERT) PART #####
             current_value_alert = getValueAlertServiceRuleById(
                 contract, _serviceId)
-            app.logger.info(f"\n{current_value_alert}\n")
+            # app.logger.info(f"\n{current_value_alert}\n")
+            print(f"\n{current_value_alert}\n")
 
             if dataMeasured > current_value_alert:
 
-                app.logger.info("\n\nSending Alert...\n")
+                # app.logger.info("\n\nSending Alert...\n")
+                print("\n\nSending Alert...\n")
 
                 codeAlert = getCodeAlertServiceRuleById(contract, _serviceId)
                 one_alert = generate_one_alert(
@@ -174,7 +178,9 @@ def sensors():
                     _alertBody=_alertBody
                 )
 
-                app.logger.info("\n\nAlert Sent to the Blockchain\n")
+                # app.logger.info("\n\nAlert Sent to the Blockchain\n")
+                print("\n\nAlert Sent to the Blockchain\n")
+                
                 time.sleep(10)
                 try:
                     web3.eth.waitForTransactionReceipt(tx_hash)
@@ -183,7 +189,8 @@ def sensors():
 
             ##### CERTIFICATION (MEASURES) PART #####
             timeSendMeasure = detectEachFrequency(dateLastQuery, frequency)
-            app.logger.info(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
+            # app.logger.info(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
+            print(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
 
             if timeSendMeasure:
 
@@ -201,7 +208,8 @@ def sensors():
                 _measureHeader = generate_measureHeader(one_measure)
                 _measureBody = generate_measureBody(one_measure)
 
-                app.logger.info(f"\n\nSend tx To Blockchain\n")
+                # app.logger.info(f"\n\nSend tx To Blockchain\n")
+                print(f"\n\nSend tx To Blockchain\n")
 
                 tx_hash = addMeasureFunct(
                     web3=web3,
@@ -213,7 +221,9 @@ def sensors():
                     _measurebody=_measureBody
                 )
 
-                app.logger.info("Data Sent to the Blockchain")
+                # app.logger.info("Data Sent to the Blockchain")
+                print("Data Sent to the Blockchain")
+
                 time.sleep(10)
                 try:
                     web3.eth.waitForTransactionReceipt(tx_hash)
@@ -221,8 +231,9 @@ def sensors():
                     time.sleep(10)
 
                 app.config["dateLastQuery"] = date_to
-                app.logger.info(
-                    f"\n\napp.config['dateLastQuery']: {app.config['dateLastQuery']}\n")
+                # app.logger.info(
+                #     f"\n\napp.config['dateLastQuery']: {app.config['dateLastQuery']}\n")
+                print(f"\n\napp.config['dateLastQuery']: {app.config['dateLastQuery']}\n")
 
             ##### READ INFOS FROM BLOCKCHAIN PART #####
 
