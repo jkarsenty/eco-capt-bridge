@@ -87,8 +87,8 @@ def get_value_alert(contract: Contract, _serviceId: int):
 
 def map_serviceId_to_measure(_serviceId: int, humidity, temperature):
     if _serviceId == 0:
-        dataMeasured = humidity
-    elif _serviceId == 1:
         dataMeasured = temperature
+    elif _serviceId == 1:
+        dataMeasured = humidity 
 
     return dataMeasured

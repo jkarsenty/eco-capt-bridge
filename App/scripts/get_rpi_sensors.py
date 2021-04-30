@@ -1,13 +1,14 @@
 ##### CODE THAT RUN ON THE RASPBERRY #####
 
 # Get Data
-import Adafruit_DHT
+# import Adafruit_DHT
 import time
 import datetime as dt
 #time.strftime('%I:%M:%S')
 import csv
 import sys
 import re,uuid
+from pprint import pprint
 
 def get_mac_address():
     # ether en0 or wlan0
@@ -38,11 +39,16 @@ def get_sensors_data(pin:int):
 # Send Data
 import requests
 
+def fake_data_for_demo(n):
+    temperature = [34, 40, 38, 41, 43, 39]
+    humididy = [47,56,45,44,59,48]
+    timestamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return temperature[n],humididy[n],timestamp
 
 def send_data(temperature:float, humidity:float, timestamp:str, mac_address:str, _serviceId:int):
 
-    url_heroku = 'https://eco-capt-bridge.herokuapp.com/sensors'
-    # url = 'http://127.0.0.1:5000/sensors'
+    # url_heroku = 'https://eco-capt-bridge.herokuapp.com/sensors'
+    url = 'http://127.0.0.1:5000/sensors'
 
     headers = {
         'Content-Type': 'application/json',
@@ -54,8 +60,10 @@ def send_data(temperature:float, humidity:float, timestamp:str, mac_address:str,
         "mac_address": mac_address,
         '_serviceId':_serviceId
     }
+    
+    pprint(data)
 
-    resp = requests.post(url_heroku, headers=headers, json=data)
+    resp = requests.post(url, headers=headers, json=data)
 
     return resp
     
@@ -64,7 +72,7 @@ if __name__ == '__main__':
     
     csvfile = 'temp.csv'
     isActive = False
-    _serviceId = 1
+    _serviceId = 0
     mac_address = get_mac_address()
 
     while isActive : 
@@ -85,7 +93,23 @@ if __name__ == '__main__':
         resp = send_data(temperature, humidity, timestamp, mac_address, _serviceId)
         print(data)
         time.sleep(10) # update script every 10 seconds
+    # temperature,humidity,timestamp = get_sensors_data(pin=4)
+    # resp = send_data(temperature, humidity, timestamp, mac_address, _serviceId)
 
-    temperature,humidity,timestamp = get_sensors_data(pin=4)
-    resp = send_data(temperature, humidity, timestamp, mac_address, _serviceId)
-    
+    for i in range(5):
+        print(f"\n\nPHASHE {i}\n\n")
+        n = 0        
+        while n < 6 :
+            temperature, humidity, timestamp = fake_data_for_demo(n)
+            if i == 2 :
+                temperature = temperature + 4*i
+            elif i == 4:
+                temperature = temperature
+            else :
+                temperature = temperature + 2*i
+
+            resp = send_data(temperature, humidity, timestamp,
+                            mac_address, _serviceId)
+            n += 1
+            print("\n")
+            time.sleep(20)

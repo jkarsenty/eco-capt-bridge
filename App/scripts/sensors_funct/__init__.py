@@ -45,7 +45,11 @@ def generate_one_measure(maxValue:int,minValue:int,meanValue:int,medianValue:int
 
     return one_measure
 
-def generate_one_alert(codeAlert,valueAlert,timestamp,version:str="00.01.00"):
+def generate_one_alert(codeAlert:str,valueAlert:float,timestamp,version:str="00.01.00"):
+    valueAlert = str(int(valueAlert))
+    while len(valueAlert) != 8:
+        valueAlert = "0"+valueAlert
+
     one_alert = {
         "_alertBody": {
             "version": version,
@@ -82,13 +86,14 @@ def generate_measureBody(one_measure:dict)->str:
     return _measureBody_hex
 
 def generate_alertBody(one_alert: dict) -> str:
-    _alertBody = one_alert["_alertBody"]
-    version = _alertBody["version"]
-    codeAlert = _alertBody["codeAlert"]
-    date = _alertBody["date"]
-    valueAlert = _alertBody["valueAlert"]
+    _alertBody = one_alert["_alertBody"] 
+    version = _alertBody["version"] # 8
+    codeAlert = _alertBody["codeAlert"] #4
+    date = _alertBody["date"] #12
+    valueAlert = _alertBody["valueAlert"] # 8
     
     _alerteConfig_hex = stringToHex(f"{version}{codeAlert}{date}{valueAlert}")
+    
     assert len(_alerteConfig_hex) == 66,_alerteConfig_hex
     return _alerteConfig_hex
 

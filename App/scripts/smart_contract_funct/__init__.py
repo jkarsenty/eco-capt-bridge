@@ -81,10 +81,10 @@ def generate_list_adresses_keys(bip44_hdwallet: BIP44HDWallet, n_address: int) -
 
 def createBridgeWallet(mnemonic: str):
     hd_wallet = generate_hdwallet(mnemonic=mnemonic)
-    account_infos = generate_list_adresses_keys(hd_wallet, 1)
+    account_infos = generate_list_adresses_keys(hd_wallet, 2)
     assert isinstance(account_infos, list)
-    assert len(account_infos) == 1
-    account_infos = account_infos[0]
+    assert len(account_infos) == 2
+    account_infos = account_infos[1] # bridge is address 1
     assert isinstance(account_infos, tuple)
     bridgeAddress = account_infos[0]
     private_key = account_infos[1]
@@ -261,9 +261,13 @@ def getFrequencyServiceById(contract:Contract,_serviceId:int)->str:
 
 def getValueAlertServiceRuleById(contract:Contract,_serviceId:int)->int:
     oneServiceRule = getServicesRuleById(contract, _serviceId)
-    valueAlert = oneServiceRule[7].decode('ascii')
-    assert valueAlert.isnumeric()
-    return int(valueAlert)
+    if oneServiceRule == None:
+        return 0
+    else :
+        valueAlert = oneServiceRule[7].decode('ascii')
+        # print(valueAlert)
+        assert valueAlert.isnumeric()
+        return int(valueAlert)
 
 def getCodeAlertServiceRuleById(contract:Contract,_serviceId:int):
     oneServiceRule = getServicesRuleById(contract, _serviceId)

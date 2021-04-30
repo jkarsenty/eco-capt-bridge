@@ -67,7 +67,7 @@ except:
         assert False
 
 app.config["_serviceId"] = 1 
-app.config["frequency"] = 3600  # by default 1H = 3600s
+app.config["frequency"] = 120  # by default 1H = 3600s
 app.config["dateLastQuery"] = "2021-04-01 10:10:00"
 
 @app.route('/')
@@ -135,9 +135,13 @@ def sensors():
 
             news_sensors_data = SensorsDatabase(
                 temperature=temperature, humidity=humidity, timestamp=timestamp)
+
+            print("\nAdd Data to DB\n")
+
             try:
                 db.session.add(news_sensors_data)
                 db.session.commit()
+                print("\nData Added to DB\n")
             except:
                 return "<h1> ERROR WITH THE ADDING TO DATABASE <h1/>"
 
@@ -145,17 +149,20 @@ def sensors():
             web3 = connectWeb3(infura_id=infura_id)
             contract = generateContract(web3, contract_address, abi_str)
             bridgeAddress, private_key = createBridgeWallet(mnemonic=seed)
+            print(f"\nBRIDGE: {bridgeAddress}\n")
+
             timestamp = timestamp.strftime('%Y%m%d%H%M')
 
             ## MAPPING SERVICE Id TO MEASURES ##
             dataMeasured = map_serviceId_to_measure(
                 _serviceId, humidity, temperature)
+            print(f"\nData Measured : {dataMeasured}\n")
 
             ##### CERTIFICATION (ALERT) PART #####
             current_value_alert = getValueAlertServiceRuleById(
                 contract, _serviceId)
             # app.logger.info(f"\n{current_value_alert}\n")
-            print(f"\n{current_value_alert}\n")
+            print(f"\nALERT VALUE: {current_value_alert}\n")
 
             if dataMeasured > current_value_alert:
 
@@ -163,6 +170,10 @@ def sensors():
                 print("\n\nSending Alert...\n")
 
                 codeAlert = getCodeAlertServiceRuleById(contract, _serviceId)
+                print(codeAlert)
+                print(dataMeasured)
+                print(timestamp)
+
                 one_alert = generate_one_alert(
                     codeAlert=codeAlert, valueAlert=dataMeasured, timestamp=timestamp)
                 _ruleId = 0
@@ -190,16 +201,23 @@ def sensors():
             ##### CERTIFICATION (MEASURES) PART #####
             timeSendMeasure = detectEachFrequency(dateLastQuery, frequency)
             # app.logger.info(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
-            print(f"\n\ntimeSendMeasure:{timeSendMeasure}\n")
+            print(f"\n\ntimeSendMeasure: {timeSendMeasure}\n")
 
             if timeSendMeasure:
 
                 sensors_data = readSensorsDatabase(
                     SensorsDatabase, date_from=dateLastQuery, date_to=date_to)
+                print(sensors_data)
+
                 temperature_data = [d.temperature for d in sensors_data]
+                
+                print(type(temperature_data))
+                print(f"DATA {temperature_data}")
 
                 maxValue, minValue, meanValue, medianValue = statsSensorsData(
                     temperature_data)
+                print(f"\nMAX: {maxValue}\nMIN: {minValue}\nMEAN: {meanValue}\nMEDIAN: {medianValue}\n")
+
                 # measureType =
                 # timeCode =
                 # nbTime =
@@ -210,6 +228,7 @@ def sensors():
 
                 # app.logger.info(f"\n\nSend tx To Blockchain\n")
                 print(f"\n\nSend tx To Blockchain\n")
+                
 
                 tx_hash = addMeasureFunct(
                     web3=web3,
