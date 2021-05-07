@@ -50,7 +50,7 @@ class SensorsDatabase(db.Model):
 try:
     app.config["INFURA_ID"] = os.getenv("INFURA_ID")
     app.config["SEED"] = os.getenv("SEED")
-    app.config["CONTRACT_ADRESS"] = os.getenv("CONTRACT_ADRESS")
+    app.config["CONTRACT_ADRESS"] = os.getenv("CONTRACT_ADRESS_ZG")
     app.config["ABI"] = os.getenv("ABI")
     assert app.config["INFURA_ID"] != None and app.config["SEED"] != None
     assert app.config["CONTRACT_ADRESS"] != None and app.config["ABI"] != None
@@ -66,8 +66,8 @@ except:
         print("error need env info")
         assert False
 
-app.config["_serviceId"] = 1 
-app.config["frequency"] = 120  # by default 1H = 3600s
+app.config["_serviceId"] = 0 #by default 0
+app.config["frequency"] = 125  # by default 1H = 3600s
 app.config["dateLastQuery"] = "2021-04-01 10:10:00"
 
 @app.route('/')
@@ -77,6 +77,7 @@ def index():
     return render_template("index.html", title=title)
 
 
+print(f"CONTRACT ADRESS : {app.config['CONTRACT_ADRESS']}")
 ###############################################
 ############# SENSORS BRIDGE PART #############
 ###############################################
