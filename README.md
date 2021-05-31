@@ -1,5 +1,5 @@
 # eco-capt-bridge
-Bridge part of the eco-capt project.
+Bridge part of the eco-capt project.   
 Repo of eco-capt project : https://github.com/zirgudaga/eco-capt
 
 To add after modifications :  
